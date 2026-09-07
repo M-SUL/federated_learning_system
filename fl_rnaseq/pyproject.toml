@@ -1,0 +1,94 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fl-rnaseq"
+version = "0.1.0"
+description = "Federated Learning on TCGA PANCAN HiSeq RNA-seq data with Flower"
+license = {file = "LICENSE"}
+dependencies = [
+    "flwr[simulation]>=1.28.0",
+    # Standard Dirichlet partitioner. Used for the client split only - it never
+    # sees the expression matrix and downloads nothing.
+    "flwr-datasets>=0.5.0",
+    "datasets>=2.14.0",
+    "torch>=2.0.0",
+    "pandas>=2.0.0",
+    "scikit-learn>=1.3.0",
+    # Capped: datasets -> pyarrow can pull numpy 2.x, whose ABI break stops
+    # torch 2.0.1 loading with "_ARRAY_API not found".
+    "numpy>=1.24.0,<2.0",
+    "matplotlib>=3.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter>=1.0.0",
+    "pytest>=7.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["fl_rnaseq"]
+
+[tool.hatch.build]
+exclude = [
+    ".venv",
+    ".git",
+    "__pycache__",
+    "*.pyc",
+    "uv.lock",
+    "notebooks/",
+]
+
+[tool.flwr.app]
+publisher = "sulemanm"
+fab-format-version = 1
+flwr-version-target = "1.31.0"
+
+[tool.flwr.app.components]
+serverapp = "fl_rnaseq.server_app:app"
+clientapp = "fl_rnaseq.client_app:app"
+
+[tool.flwr.app.config]
+num-server-rounds = 10
+fraction-evaluate = 1.0
+local-epochs = 3
+learning-rate = 1e-3
+batch-size = 32
+# Must equal options.num-supernodes below; server_app raises if they diverge.
+num-partitions = 5
+# "iid" | "dirichlet" (flwr-datasets) | "dirichlet-legacy" (hand-rolled).
+partition-strategy = "iid"
+# Concentration parameter for Dirichlet partitioning. Lower = more heterogeneous.
+dirichlet-alpha = 0.5
+# Floor on shard size, enforced by the "dirichlet" strategy only. One full batch,
+# so no client can be handed a shard too small to train on.
+partition-min-size = 32
+# Damps oversized shards. Reduces heterogeneity, so report it if enabled.
+dirichlet-self-balancing = false
+# Partition draw and model init. Does NOT affect the global train/test split,
+# which is pinned to SPLIT_SEED in dataset.py so it cannot move between runs.
+seed = 42
+# "batch" | "layer" | "none". LayerNorm is the FedBN-style ablation: BatchNorm's
+# running buffers are weight-averaged by FedAvg, which misbehaves under non-IID.
+norm = "batch"
+# Path is relative to the directory where `flwr run .` is invoked (i.e. fl_rnaseq/).
+data-dir = "../gene+expression+cancer+rna+seq/TCGA-PANCAN-HiSeq-801x20531"
+results-dir = "results"
+save-model = false
+
+[tool.flwr.federations]
+default = "local-simulation"
+
+[tool.flwr.federations.local-simulation]
+# Supplies node_config["num-partitions"] to each ClientApp.
+options.num-supernodes = 5
+options.backend.client-resources.num-cpus = 2
+options.backend.client-resources.num-gpus = 0.0
+
+# Ray-free fallback: run flower-superlink plus one flower-supernode per client.
+# See RUNNING.md.
+[tool.flwr.federations.local-deployment]
+address = "127.0.0.1:9093"
+insecure = true
