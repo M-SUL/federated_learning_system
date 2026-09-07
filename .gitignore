@@ -3,7 +3,7 @@ __pycache__/
 *.py[codz]
 *$py.class
 
-.quickstart-pytorch
+quickstart-pytorch/
 
 
 # C extensions
@@ -219,3 +219,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------------------------------
+# Project-specific
+# ---------------------------------------------------------------------------
+
+# Dataset (~393 MB). Download from UCI - see fl_rnaseq/RUNNING.md
+gene+expression+cancer+rna+seq/
+*.tar.gz
+
+# Experiment artifacts. Note: results/**/*.json and *.png are deliberately
+# NOT ignored - they are the evidence trail for the write-up and only KB in size.
+fl_rnaseq/results/**/*.pt
+fl_rnaseq/**/final_model.pt
+fl_rnaseq/.cache/
