@@ -1,0 +1,122 @@
+{
+  "partitions": [
+    {
+      "slug": "iid_seed42",
+      "strategy": "iid",
+      "alpha": null,
+      "status": "ok",
+      "seed": 42,
+      "heterogeneity_js": 0.005241454904662708,
+      "shard_sizes": [
+        128,
+        128,
+        128,
+        128,
+        128
+      ],
+      "classes_per_client": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "label_counts": {
+        "client_0": {
+          "BRCA": 50,
+          "COAD": 14,
+          "KIRC": 22,
+          "LUAD": 24,
+          "PRAD": 18
+        },
+        "client_1": {
+          "BRCA": 46,
+          "COAD": 10,
+          "KIRC": 18,
+          "LUAD": 24,
+          "PRAD": 30
+        },
+        "client_2": {
+          "BRCA": 50,
+          "COAD": 18,
+          "KIRC": 23,
+          "LUAD": 16,
+          "PRAD": 21
+        },
+        "client_3": {
+          "BRCA": 55,
+          "COAD": 8,
+          "KIRC": 24,
+          "LUAD": 25,
+          "PRAD": 16
+        },
+        "client_4": {
+          "BRCA": 39,
+          "COAD": 12,
+          "KIRC": 29,
+          "LUAD": 24,
+          "PRAD": 24
+        }
+      }
+    },
+    {
+      "slug": "dirichlet-legacy_a0.5_seed42",
+      "strategy": "dirichlet-legacy",
+      "alpha": 0.5,
+      "status": "ok",
+      "seed": 42,
+      "heterogeneity_js": 0.16061063607109455,
+      "shard_sizes": [
+        97,
+        143,
+        85,
+        191,
+        124
+      ],
+      "classes_per_client": [
+        4,
+        4,
+        5,
+        5,
+        5
+      ],
+      "label_counts": {
+        "client_0": {
+          "BRCA": 13,
+          "COAD": 0,
+          "KIRC": 12,
+          "LUAD": 52,
+          "PRAD": 20
+        },
+        "client_1": {
+          "BRCA": 113,
+          "COAD": 9,
+          "KIRC": 10,
+          "LUAD": 11,
+          "PRAD": 0
+        },
+        "client_2": {
+          "BRCA": 1,
+          "COAD": 1,
+          "KIRC": 48,
+          "LUAD": 4,
+          "PRAD": 31
+        },
+        "client_3": {
+          "BRCA": 34,
+          "COAD": 47,
+          "KIRC": 20,
+          "LUAD": 42,
+          "PRAD": 48
+        },
+        "client_4": {
+          "BRCA": 79,
+          "COAD": 5,
+          "KIRC": 26,
+          "LUAD": 4,
+          "PRAD": 10
+        }
+      }
+    }
+  ]
+}

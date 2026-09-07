@@ -1,0 +1,11 @@
+split: cb67241e1200
+
+python: 3.11.4
+platform: Windows-10-10.0.26200-SP0
+torch: 2.0.1
+numpy: 1.24.3
+pandas: 2.2.2
+scikit_learn: 1.4.2
+flwr: None
+flwr_datasets: None
+cuda_available: False

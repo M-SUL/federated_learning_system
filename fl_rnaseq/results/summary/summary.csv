@@ -1,0 +1,4 @@
+family,experiment,slug,strategy,alpha,seed,accuracy,macro_f1,coad_recall,heterogeneity_js,params,mb_per_model,total_gb
+centralized,centralized_logreg,logreg,-,,42,0.9937888198757764,0.994710743801653,1.0,,101325.0,,
+local_only,local_only,dirichlet-legacy_a0.1_seed42,dirichlet-legacy,0.1,42,0.6024844720496895,0.43929607603031384,,0.3876576569484744,,,
+local_only,local_only,iid_seed42,iid,,42,0.9838509316770185,0.9814322745069388,,0.005241454904662708,,,
