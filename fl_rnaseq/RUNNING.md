@@ -192,10 +192,16 @@ Asserts every experiment shares one test split, then writes
 
 | Experiment | Accuracy | macro-F1 | Note |
 |---|---|---|---|
-| Centralized logreg (L2) | **0.9938** | **0.9947** | best C = 0.1; exactly 1 error in 161 |
+| Centralized logreg (L2) | 0.9938 | 0.9947 | best C = 0.1; exactly 1 error in 161 |
+| Centralized logreg (L1) | 0.9938 | 0.9947 | same score on 64–191 of 20264 genes |
+| Centralized MLP, 30 ep | **1.0000** | **1.0000** | the ceiling |
 | Local-only, IID | 0.9839 ± 0.0050 | 0.9814 ± 0.0062 | isolation costs little when data is IID |
-| Local-only, α=0.1 | *collapses* | *collapses far further* | clients see only 2–3 of 5 classes |
-| Federated, IID | ≈ centralized | ≈ centralized | expected to be statistically indistinguishable |
+| Local-only, α=0.1 | 0.5503 ± 0.15 | **0.4137** ± 0.17 | clients see only 2–3 of 5 classes |
+| Federated, IID | 1.0000 | 1.0000 | matches centralized exactly |
+| Federated, α=0.5 | 0.9876 | 0.9866 | |
+| Federated, α=0.1 | 0.9565 | 0.9585 | **+0.545 macro-F1 over local-only** |
+
+Each `flwr run` takes ~4–6 min on CPU; each local-only run ~5–10 min.
 
 **Read macro-F1, not accuracy.** The five tumour types are near-linearly
 separable, so accuracy saturates near 1.0 and the centralized-vs-federated gap is

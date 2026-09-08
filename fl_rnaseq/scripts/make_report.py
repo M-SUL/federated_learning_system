@@ -92,35 +92,53 @@ def to_frame(rows: list[dict]) -> pd.DataFrame:
 
 
 def plot_headline(df: pd.DataFrame, path: Path) -> None:
-    """Accuracy and macro-F1 side by side, grouped by experiment."""
+    """Accuracy and macro-F1 per experiment, grouped by family.
+
+    Horizontal bars: the experiment names are long, and rotating them or packing
+    16 vertical groups makes the labels collide. The `dirichlet-legacy` runs are
+    excluded — they are a cross-implementation check on a different partitioner,
+    and interleaving them here obscures the comparison this figure exists for.
+    """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
     d = df.dropna(subset=["accuracy", "macro_f1"])
+    d = d[d["strategy"] != "dirichlet-legacy"]
     if d.empty:
         return
+    d = d.iloc[::-1]  # barh draws bottom-up; keep the table's reading order
 
-    labels = [f"{r.family.replace('_', '-')}\n{r.slug}" for r in d.itertuples()]
-    x = np.arange(len(d))
-    width = 0.36
+    labels = [f"{r.family.replace('_', '-')} · {r.slug.replace('_seed42', '')}"
+              for r in d.itertuples()]
+    y = np.arange(len(d))
+    height = 0.36
 
-    fig, ax = plt.subplots(figsize=(max(7.0, 1.5 * len(d)), 4.4))
-    # Two measures on one 0-1 scale — never a second y-axis.
-    ax.bar(x - width / 2, d["accuracy"], width * 0.92, color="#0072B2", label="accuracy")
-    ax.bar(x + width / 2, d["macro_f1"], width * 0.92, color="#E69F00", label="macro-F1")
+    fig, ax = plt.subplots(figsize=(8.2, 0.52 * len(d) + 1.6))
+    # Two measures on one shared 0-1 scale — never a second axis.
+    ax.barh(y + height / 2, d["accuracy"], height * 0.92, color="#0072B2", label="accuracy")
+    ax.barh(y - height / 2, d["macro_f1"], height * 0.92, color="#E69F00", label="macro-F1")
 
-    for xi, (a, f) in enumerate(zip(d["accuracy"], d["macro_f1"])):
-        ax.text(xi - width / 2, a + 0.012, f"{a:.3f}", ha="center", fontsize=7.5, color=INK)
-        ax.text(xi + width / 2, f + 0.012, f"{f:.3f}", ha="center", fontsize=7.5, color=INK)
+    for yi, (a, f) in enumerate(zip(d["accuracy"], d["macro_f1"])):
+        ax.text(a + 0.008, yi + height / 2, f"{a:.3f}", va="center", fontsize=7.5, color=INK)
+        ax.text(f + 0.008, yi - height / 2, f"{f:.3f}", va="center", fontsize=7.5, color=INK)
 
-    ax.set_xticks(x, labels, fontsize=8)
-    ax.set_ylim(0, 1.12)
-    ax.set_ylabel("score on the global test set", color=INK)
+    ax.set_yticks(y, labels, fontsize=8.5)
+    ax.set_xlim(0, 1.12)
+    ax.set_xlabel("score on the global test set", color=INK)
     ax.set_title("Centralized vs federated vs isolated", color=INK, fontsize=11, pad=10)
-    _style(ax)
+
+    ax.set_axisbelow(True)
+    ax.grid(True, axis="x", color=GRID, linewidth=0.6)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    for side in ("left", "bottom"):
+        ax.spines[side].set_color(GRID)
+    ax.tick_params(colors=INK_MUTED, length=0)
+    for lbl in ax.get_xticklabels() + ax.get_yticklabels():
+        lbl.set_color(INK)
     ax.legend(frameon=False, labelcolor=INK, fontsize=9, ncol=2,
-              loc="upper center", bbox_to_anchor=(0.5, 1.0))
+              loc="lower right")
 
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout()
@@ -135,6 +153,11 @@ def plot_alpha_sweep(df: pd.DataFrame, path: Path) -> None:
     import matplotlib.pyplot as plt
 
     swept = df.dropna(subset=["alpha", "macro_f1"])
+    # Only the flwr-datasets "dirichlet" partitioner belongs on the sweep: local-only
+    # and federated share those exact shards, so the vertical gap between the two
+    # lines is the effect of aggregation alone. The hand-rolled "dirichlet-legacy"
+    # runs use different shards and would plot as a spurious second point per alpha.
+    swept = swept[swept["strategy"] == "dirichlet"]
     if swept.empty:
         return
 
@@ -153,7 +176,7 @@ def plot_alpha_sweep(df: pd.DataFrame, path: Path) -> None:
                 label=family.replace("_", "-"))
         for r in grp.itertuples():
             ax.annotate(f"{r.macro_f1:.3f}", (r.alpha, r.macro_f1),
-                        textcoords="offset points", xytext=(0, 8),
+                        textcoords="offset points", xytext=(0, 9),
                         ha="center", fontsize=7.5, color=INK)
 
     ax.set_xscale("log")
