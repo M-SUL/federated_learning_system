@@ -188,6 +188,48 @@ Asserts every experiment shares one test split, then writes
 
 ---
 
+## 5b. The federation console (web dashboard)
+
+A local web app showing the five views: sites and data heterogeneity, the
+training monitor, federated vs isolated, the cost and privacy ledger, and a live
+console that streams a running federation.
+
+**It has its own venv** (`.venv-web`), separate from `.venv-fl`, so its
+dependencies can never disturb the `numpy<2` pin that protects torch:
+
+```powershell
+cd <repo root>
+& $PY -m venv .venv-web
+.\.venv-web\Scripts\python.exe -m pip install -r webapp\requirements.txt
+```
+
+Run it — two terminals, and the order does not matter:
+
+```powershell
+# terminal 1 — the dashboard
+.\.venv-web\Scripts\python.exe webapp\serve.py        # http://127.0.0.1:8000
+
+# terminal 2 — a federation (optional; the first four views work without one)
+cd fl_rnaseq
+flwr run . local-simulation --run-config "partition-strategy='dirichlet' dirichlet-alpha=0.1"
+```
+
+**Observe-only.** The dashboard never starts, stops, or configures training — it
+tails an append-only event log the ServerApp writes to `results/live/`. The
+emitter swallows every exception and latches itself off after one failure, so a
+dashboard bug cannot fail a run. Nothing breaks if the dashboard is not running.
+
+| Situation | What you see |
+|---|---|
+| No run yet | Views 1, 3, 4 render from stored results; the console shows the command to start one and picks up a new run within ~3 s |
+| Run in progress | Per-round metrics and each site's reply as it lands, with node id and local loss |
+| Run finished | The stream replays the whole run, then closes |
+| Run killed mid-round | "Ended unexpectedly at round N", with everything received so far kept |
+| Two runs at once | A warning and a switcher — streams are never merged |
+
+Tests (no framework, no browser, no venv needed) are in `webapp/tests/`; see its
+README.
+
 ## 6. Expected results
 
 | Experiment | Accuracy | macro-F1 | Note |
