@@ -3,7 +3,8 @@ centralized,centralized_logreg,logreg,-,,42,0.9937888198757764,0.994710743801653
 centralized,centralized_logreg_l1,logreg_l1,-,,42,0.9937888198757764,0.994710743801653,1.0,,,,
 centralized,centralized_mlp_30ep,mlp_30ep,-,,42,1.0,1.0,1.0,,10443269.0,41.77,0.084
 centralized,centralized_mlp_6ep,mlp_6ep,-,,42,0.9937888198757764,0.994710743801653,1.0,,10443269.0,41.77,0.084
-federated,federated_fedavg,dirichlet_a0.1_seed42,dirichlet,0.1,42,0.9565217391304348,0.9585247650495301,0.9375,,10443269.0,41.77,4.177
+federated,federated_fedavg,dirichlet_a0.1_seed42,dirichlet,0.1,42,0.9627329192546584,0.9617582417582418,0.875,,10443269.0,41.77,4.177
+federated,federated_fedavg,dirichlet_a0.1_seed42_norm-layer,dirichlet,0.1,42,0.9813664596273292,0.981262930908879,0.9375,,10443269.0,41.77,4.177
 federated,federated_fedavg,dirichlet_a0.5_seed42,dirichlet,0.5,42,0.9875776397515528,0.9866333349358204,0.9375,,10443269.0,41.77,4.177
 federated,federated_fedavg,dirichlet_a1.0_seed42,dirichlet,1.0,42,1.0,1.0,1.0,,10443269.0,41.77,4.177
 federated,federated_fedavg,iid_seed42,iid,,42,1.0,1.0,1.0,,10443269.0,41.77,4.177

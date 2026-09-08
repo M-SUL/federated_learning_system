@@ -88,14 +88,24 @@ def communication_cost(model: torch.nn.Module, num_clients: int, num_rounds: int
     }
 
 
-def run_slug(strategy: str, alpha: float | None = None, seed: int = 42) -> str:
+def run_slug(
+    strategy: str,
+    alpha: float | None = None,
+    seed: int = 42,
+    norm: str = "batch",
+) -> str:
     """Canonical directory name for one experiment configuration.
 
     Single source of truth so scripts and server_app cannot drift apart.
+
+    Every knob that changes the result must appear here, or two different
+    experiments write to the same directory and the second silently destroys the
+    first. `norm` is suffixed only when it differs from the default, so existing
+    result paths keep their names.
     """
-    if strategy == "iid" or alpha is None:
-        return f"iid_seed{seed}"
-    return f"{strategy}_a{alpha}_seed{seed}"
+    base = f"iid_seed{seed}" if (strategy == "iid" or alpha is None) \
+        else f"{strategy}_a{alpha}_seed{seed}"
+    return base if norm == "batch" else f"{base}_norm-{norm}"
 
 
 def _jsonable(obj: Any) -> Any:

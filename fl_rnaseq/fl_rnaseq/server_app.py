@@ -94,7 +94,7 @@ def main(grid: Grid, context: Context) -> None:
         evaluate_fn=global_evaluate,
     )
 
-    slug = run_slug(strategy_name, alpha, seed)
+    slug = run_slug(strategy_name, alpha, seed, norm=cfg["norm"])
     out_dir = Path(cfg["results-dir"]) / "federated" / slug
 
     payload = result_envelope(

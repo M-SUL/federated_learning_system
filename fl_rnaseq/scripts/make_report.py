@@ -193,6 +193,116 @@ def plot_alpha_sweep(df: pd.DataFrame, path: Path) -> None:
     plt.close(fig)
 
 
+def plot_convergence(rows: list[dict], df: pd.DataFrame, path: Path) -> None:
+    """FedAvg convergence across all federated runs, against the centralized ceiling.
+
+    Two panels sharing a round axis: macro-F1 (does it reach the ceiling?) and
+    test loss on a log scale (does it actually settle, and where?). The loss panel
+    is the informative one -- macro-F1 saturates and hides the fact that the
+    a=0.1 run plateaus at a far worse optimum rather than merely converging slower.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    fed = [r for r in rows if r["_family"] == "federated" and r.get("history")]
+    if not fed:
+        return
+    fed.sort(key=lambda r: (r["config"].get("alpha") is not None,
+                            -(r["config"].get("alpha") or 0)))
+
+    # Fixed hue per configuration, assigned in display order and never cycled.
+    colors = ["#0072B2", "#E69F00", "#009E73", "#D55E00", "#CC79A7"]
+    ceiling = df[df["family"] == "centralized"]["macro_f1"].max()
+
+    fig, (ax_f1, ax_loss) = plt.subplots(
+        1, 2, figsize=(11.4, 4.2), gridspec_kw={"wspace": 0.22}
+    )
+
+    for i, r in enumerate(fed):
+        h = r["history"]
+        rounds = [x["round"] for x in h]
+        label = r["slug"].replace("_seed42", "")
+        c = colors[i % len(colors)]
+        ax_f1.plot(rounds, [x["macro_f1"] for x in h], linewidth=2, marker="o",
+                   markersize=4, color=c, label=label)
+        ax_loss.plot(rounds, [x["loss"] for x in h], linewidth=2, marker="o",
+                     markersize=4, color=c, label=label)
+
+    if pd.notna(ceiling):
+        ax_f1.axhline(ceiling, color=INK_MUTED, linewidth=1, linestyle="--")
+        ax_f1.annotate(f"centralized {ceiling:.3f}", (0, ceiling),
+                       textcoords="offset points", xytext=(4, -12),
+                       fontsize=8, color=INK)
+
+    ax_f1.set_ylabel("macro-F1 on the global test set", color=INK)
+    ax_f1.set_title("Convergence: does it reach the ceiling?",
+                    color=INK, fontsize=10.5, pad=8)
+    ax_loss.set_yscale("log")
+    ax_loss.set_ylabel("test cross-entropy (log scale)", color=INK)
+    ax_loss.set_title("Convergence: where does the loss settle?",
+                      color=INK, fontsize=10.5, pad=8)
+
+    for ax in (ax_f1, ax_loss):
+        ax.set_xlabel("FedAvg round", color=INK)
+        ax.set_axisbelow(True)
+        ax.grid(True, color=GRID, linewidth=0.6)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+        for side in ("left", "bottom"):
+            ax.spines[side].set_color(GRID)
+        ax.tick_params(colors=INK_MUTED, length=0)
+        for lbl in ax.get_xticklabels() + ax.get_yticklabels():
+            lbl.set_color(INK)
+    ax_f1.legend(frameon=False, labelcolor=INK, fontsize=8.5, loc="lower right")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _print_convergence_check(rows: list[dict], df: pd.DataFrame) -> None:
+    """Quantitative convergence verdict per federated run, versus the ceiling.
+
+    Reports rounds-to-99%-of-final (speed), the spread over the last three rounds
+    (has it settled, or is it still oscillating?), the final loss, and the gap to
+    the best centralized model.
+    """
+    fed = [r for r in rows if r["_family"] == "federated" and r.get("history")]
+    if not fed:
+        return
+    ceiling = df[df["family"] == "centralized"]["macro_f1"].max()
+
+    print(f"\nConvergence check (centralized ceiling = {ceiling:.4f})\n")
+    print(f"  {'run':<22}{'rounds':>8}{'final F1':>10}{'last-3 spread':>15}"
+          f"{'final loss':>12}{'gap':>9}")
+    print("  " + "-" * 76)
+
+    for r in sorted(fed, key=lambda r: r["slug"]):
+        h = r["history"]
+        f1 = [x["macro_f1"] for x in h]
+        final = f1[-1]
+        # First round reaching 99% of the final score.
+        hit = next((x["round"] for x in h if x["macro_f1"] >= 0.99 * final), None)
+        spread = max(f1[-3:]) - min(f1[-3:])
+        loss = h[-1]["loss"]
+        gap = ceiling - final
+        verdict = "settled" if spread <= 0.02 else "oscillating"
+        print(
+            f"  {r['slug'].replace('_seed42',''):<22}{hit if hit is not None else '-':>8}"
+            f"{final:>10.4f}{spread:>15.4f}{loss:>12.4f}{gap:>9.4f}  {verdict}"
+        )
+
+    losses = {r["slug"].replace("_seed42", ""): r["history"][-1]["loss"] for r in fed}
+    if "iid" in losses:
+        worst = max(losses, key=losses.get)
+        if worst != "iid" and losses["iid"] > 0:
+            print(
+                f"\n  Final loss for {worst} is {losses[worst] / losses['iid']:.0f}x the IID run's. "
+                "Under strong\n  heterogeneity FedAvg settles at a worse optimum, not merely a slower one."
+            )
+
+
 def _style(ax) -> None:
     ax.set_axisbelow(True)
     ax.grid(True, axis="y", color=GRID, linewidth=0.6)
@@ -229,6 +339,9 @@ def main() -> int:
 
     plot_headline(df, out / "headline_comparison.png")
     plot_alpha_sweep(df, out / "alpha_sweep.png")
+    plot_convergence(rows, df, out / "convergence.png")
+
+    _print_convergence_check(rows, df)
 
     env_lines = [f"split: {sha}", ""]
     if rows:
