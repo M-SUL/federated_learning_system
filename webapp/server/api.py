@@ -151,7 +151,24 @@ def create_app(
 
     @app.get("/")
     def index() -> FileResponse:
-        return FileResponse(STATIC_DIR / "index.html")
+        return FileResponse(STATIC_DIR / "index.html",
+                            headers={"Cache-Control": "no-cache"})
+
+    @app.middleware("http")
+    async def revalidate_static(request: Request, call_next):
+        """Force the browser to revalidate the app's own assets.
+
+        Without this, a browser holds on to cached ES modules and keeps running
+        an older build after the server is restarted -- which looks exactly like
+        a broken feature: the API has the new routes, the served files are
+        current, and the page still shows the previous UI. `no-cache` means
+        "revalidate before use", not "do not store", so the ETag still saves the
+        transfer when nothing changed.
+        """
+        response = await call_next(request)
+        if request.url.path.startswith("/static/"):
+            response.headers["Cache-Control"] = "no-cache"
+        return response
 
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
     return app
