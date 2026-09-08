@@ -16,6 +16,12 @@ const state = {
   raw: null,
   view: 'sites',
   selected: { partitionSlug: null, comparisonKey: null, trainingRunId: null },
+  // Launcher: `launch` is the server's whitelist and current availability;
+  // `launchForm` is the chosen values, which the server re-validates regardless.
+  launch: null,
+  launchForm: { strategy: 'dirichlet', alpha: 0.1, rounds: 10, norm: 'batch', seed: 42 },
+  launchPending: false,
+  launchError: null,
 };
 
 const subscribers = new Set();

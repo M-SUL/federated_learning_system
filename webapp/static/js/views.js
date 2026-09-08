@@ -430,6 +430,69 @@ const STATUS_TEXT = {
   finished: 'Finished', failed: 'Failed', crashed: 'Ended unexpectedly',
 };
 
+/** Dropdowns only, populated from the server's whitelist — the page never
+ *  invents a value, and the server re-validates everything anyway. */
+function launchPanel(state) {
+  const info = state.launch;
+  if (!info) return null;
+
+  if (!info.enabled) {
+    return h('div', { class: 'note' }, info.disabled_reason || 'Launching is disabled.');
+  }
+  if (!info.available) {
+    return h('div', { class: 'alert' },
+      `Cannot launch: ${info.unavailable_reason}. You can still start runs from a terminal.`);
+  }
+
+  const busy = info.busy;
+  const sel = state.launchForm;
+  const o = info.options;
+
+  const field = (name, label, values, fmt = String) => h('label', { class: 'field' }, [
+    h('span', {}, label),
+    h('select', {
+      disabled: !!busy,
+      onchange: (e) => window.__launchForm({ [name]: e.target.value }),
+    }, values.map((v) => {
+      const opt = h('option', { value: String(v) }, fmt(v));
+      if (String(sel[name]) === String(v)) opt.setAttribute('selected', 'selected');
+      return opt;
+    })),
+  ]);
+
+  const isIid = sel.strategy === 'iid';
+  const fields = [
+    field('strategy', 'Partitioning', o.strategy,
+      (v) => (v === 'iid' ? 'IID (uniform)' : v === 'dirichlet' ? 'Dirichlet (non-IID)'
+        : 'Dirichlet (legacy partitioner)')),
+    isIid ? null : field('alpha', 'Alpha', o.alpha, (v) => `${v}${v <= 0.1 ? '  (extreme)' : ''}`),
+    field('rounds', 'Rounds', o.rounds),
+    field('norm', 'Normalisation', o.norm,
+      (v) => (v === 'batch' ? 'BatchNorm' : v === 'layer' ? 'LayerNorm' : 'None')),
+    field('seed', 'Seed', o.seed),
+  ].filter(Boolean);
+
+  return h('div', { class: 'launch' }, [
+    h('h3', {}, 'Start a federation'),
+    h('div', { class: 'fields' }, fields),
+    h('div', { class: 'row' }, [
+      h('button', {
+        class: 'btn primary', disabled: !!busy || state.launchPending,
+        onclick: () => window.__launch(),
+      }, state.launchPending ? 'Starting…' : 'Start run'),
+      busy ? h('button', { class: 'btn danger', onclick: () => window.__stopRun() },
+        'Stop run') : null,
+      h('span', { class: 'tiny' }, busy
+        ? `Run ${busy.run_id} is in progress.`
+        : 'Takes a few minutes; the console below fills in as rounds complete.'),
+    ]),
+    busy ? h('p', { class: 'note' },
+      'Only one run at a time. Concurrent simulations exhaust memory — clients die '
+      + 'mid-round and the global model silently stops updating.') : null,
+    state.launchError ? h('p', { class: 'alert' }, state.launchError) : null,
+  ]);
+}
+
 export function consoleView(state) {
   const run = state.liveRun;
   const status = state.liveStatus;
@@ -437,12 +500,12 @@ export function consoleView(state) {
   if (!run) {
     return card('Live federation console', 'Streams a running federation, round by round.',
       h('div', {}, [
+        launchPanel(state),
         h('p', { class: 'empty' }, 'No run to show yet.'),
-        h('p', {}, 'Start one in another terminal:'),
-        h('pre', {}, 'cd fl_rnaseq\nflwr run . local-simulation'),
+        h('p', { class: 'tiny' }, 'Or start one from a terminal:'),
+        h('pre', {}, 'cd fl_rnaseq\n..\\.venv-fl\\Scripts\\flwr.exe run . local-simulation'),
         h('p', { class: 'tiny' },
-          'The dashboard never starts training itself — it only reads the event log, '
-          + 'so nothing here can affect a run. It will pick up a new run within a few seconds.'),
+          'Runs started either way appear here — the dashboard only reads the event log.'),
       ]));
   }
 
@@ -468,6 +531,7 @@ export function consoleView(state) {
     card('Live federation console',
       run.slug + ' — ' + (STATUS_TEXT[status] || status),
       h('div', {}, [
+        launchPanel(state),
         state.multipleLive.length ? h('p', { class: 'alert' },
           `${state.multipleLive.length + 1} runs are live at once. Showing the newest; `
           + 'streams are never merged.') : null,

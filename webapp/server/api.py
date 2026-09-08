@@ -16,14 +16,22 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import live as live_mod
+from . import runner as runner_mod
 from . import snapshot as snapshot_mod
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
 
 
-def create_app(results_dir: Path, live_dir: Path) -> FastAPI:
+def create_app(
+    results_dir: Path,
+    live_dir: Path,
+    app_dir: Path | None = None,
+    allow_launch: bool = True,
+) -> FastAPI:
     app = FastAPI(title="FL RNA-seq Federation Console", docs_url=None, redoc_url=None)
     results_dir, live_dir = Path(results_dir), Path(live_dir)
+    app_dir = Path(app_dir) if app_dir else results_dir.parent
+    launcher = runner_mod.Launcher(app_dir, live_dir)
 
     @app.get("/api/health")
     def health() -> dict:
@@ -96,6 +104,50 @@ def create_app(results_dir: Path, live_dir: Path) -> FastAPI:
             headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no",
                      "Connection": "keep-alive"},
         )
+
+    @app.get("/api/launch")
+    def launch_info() -> dict:
+        """What the launcher will accept, and whether it is usable right now."""
+        ok, why = launcher.available()
+        busy = launcher.busy()
+        return {
+            "enabled": allow_launch,
+            # Disabled on a non-loopback bind unless explicitly overridden, so
+            # binding 0.0.0.0 for a projector does not hand the network a way to
+            # start jobs on this machine.
+            "disabled_reason": None if allow_launch else
+                "launching is disabled when not bound to localhost "
+                "(re-run serve.py with --allow-remote-launch to override)",
+            "available": ok,
+            "unavailable_reason": why or None,
+            "flwr_exe": str(launcher.flwr_exe) if launcher.flwr_exe else None,
+            "app_dir": str(app_dir),
+            "options": runner_mod.options(),
+            "busy": busy,
+            "last_error": launcher.last_error,
+        }
+
+    @app.post("/api/run")
+    async def start_run(request: Request) -> Response:
+        if not allow_launch:
+            return JSONResponse({"ok": False, "error": "launching is disabled"}, 403)
+        try:
+            payload = await request.json()
+        except Exception:  # noqa: BLE001 - malformed body
+            return JSONResponse({"ok": False, "error": "invalid JSON body"}, 400)
+        if not isinstance(payload, dict):
+            return JSONResponse({"ok": False, "error": "body must be an object"}, 400)
+        try:
+            result = launcher.start(payload)
+        except runner_mod.ValidationError as exc:
+            return JSONResponse({"ok": False, "error": str(exc)}, 400)
+        return JSONResponse(result, 200 if result.get("ok") else 409)
+
+    @app.post("/api/run/stop")
+    def stop_run() -> Response:
+        if not allow_launch:
+            return JSONResponse({"ok": False, "error": "launching is disabled"}, 403)
+        return JSONResponse(launcher.stop())
 
     @app.get("/")
     def index() -> FileResponse:

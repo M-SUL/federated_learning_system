@@ -17,6 +17,47 @@ const STATUS_LABEL = {
 // re-render never resets what the user picked.
 window.__select = (patch) => dispatch({ selected: { ...getState().selected, ...patch } });
 
+window.__launchForm = (patch) => {
+  const form = { ...getState().launchForm, ...patch };
+  // Selects hand back strings; the server whitelist is typed, so coerce here.
+  for (const k of ['alpha']) if (form[k] !== undefined) form[k] = Number(form[k]);
+  for (const k of ['rounds', 'seed']) if (form[k] !== undefined) form[k] = parseInt(form[k], 10);
+  dispatch({ launchForm: form, launchError: null });
+};
+
+async function refreshLaunch() {
+  try {
+    const r = await fetch('/api/launch');
+    dispatch({ launch: await r.json() });
+  } catch { /* server gone; the status pill already says so */ }
+}
+
+window.__launch = async () => {
+  const { launchForm } = getState();
+  const body = { ...launchForm };
+  if (body.strategy === 'iid') delete body.alpha;   // rejected as unexpected otherwise
+  dispatch({ launchPending: true, launchError: null });
+  try {
+    const r = await fetch('/api/run', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const d = await r.json();
+    dispatch({ launchPending: false, launchError: d.ok ? null : (d.error || 'Launch failed') });
+    if (d.ok) { await refreshLaunch(); sseInit(); }
+  } catch (e) {
+    dispatch({ launchPending: false, launchError: String(e) });
+  }
+};
+
+window.__stopRun = async () => {
+  if (!confirm('Stop the running federation? Completed rounds are kept.')) return;
+  try {
+    await fetch('/api/run/stop', { method: 'POST' });
+  } catch { /* ignore */ }
+  setTimeout(refreshLaunch, 1500);
+};
+
 function renderTabs(state) {
   const nav = document.getElementById('tabs');
   nav.replaceChildren();
@@ -88,6 +129,9 @@ async function boot() {
       'Could not load results. Is the server still running?';
     return;
   }
+  await refreshLaunch();
+  // Keeps the busy/idle state honest when a run is started or ends elsewhere.
+  setInterval(refreshLaunch, 5000);
   sseInit();
 }
 

@@ -183,3 +183,28 @@ pre {
 .ev-global_eval .ev-t { color: var(--green); font-weight: 600; }
 .ev-run_error .ev-t, .ev-run_error .ev-d { color: var(--vermillion); }
 .ev-agg_train .ev-t, .ev-agg_eval .ev-t { color: var(--orange); }
+
+/* ---- launcher ---- */
+
+.launch {
+  border: 1px solid var(--line); border-left: 3px solid var(--blue);
+  border-radius: 8px; padding: 14px 16px 16px; margin-bottom: 16px; background: #fbfdff;
+}
+.launch h3 { margin: 0 0 12px; }
+.fields { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 11.5px; color: var(--ink-muted); }
+.field select {
+  font: inherit; font-size: 12.5px; color: var(--ink); padding: 6px 9px;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--surface); min-width: 150px;
+}
+.field select:disabled { background: #f2f2ef; color: var(--ink-muted); }
+
+.btn {
+  appearance: none; font: inherit; font-size: 12.5px; cursor: pointer;
+  padding: 7px 15px; border-radius: 6px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink);
+}
+.btn:hover:not(:disabled) { border-color: var(--ink-muted); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+.btn.danger { background: var(--surface); border-color: var(--vermillion); color: #8a3c00; }
