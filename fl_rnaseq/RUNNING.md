@@ -63,15 +63,20 @@ reproduction path.
 
 **Phases 1–2 below need no installation** — they run on the packages already
 present (torch 2.0.1+cpu, scikit-learn, numpy, pandas, matplotlib). Only the
-Flower simulation needs a venv:
+Flower simulation needs a venv.
+
+> **Create the venv in the repo root, NOT inside `fl_rnaseq/`.** `flwr run .`
+> packages the app directory into a bundle, and a `.venv` inside it fails with
+> *"exceeds the maximum directory depth of 10"* — Ray ships example files nested
+> far deeper than that. `[tool.hatch.build] exclude` does not prevent this.
 
 ```powershell
-cd fl_rnaseq
+cd <repo root>                   # federated_learning_system/, the PARENT of fl_rnaseq/
 & $PY -m venv .venv
 .\.venv\Scripts\Activate.ps1     # if blocked: Set-ExecutionPolicy -Scope Process RemoteSigned
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cpu
-python -m pip install -e .
+python -m pip install -e ./fl_rnaseq
 ```
 
 Notes:
@@ -81,6 +86,30 @@ Notes:
 - Install torch first from the CPU index so the resolver cannot pull a CUDA build.
 - `numpy` is pinned `<2.0`: `datasets` → `pyarrow` may pull numpy 2.x, whose ABI
   break stops torch 2.0.1 loading with `_ARRAY_API not found`.
+- Installing pulls **scikit-learn 1.9**, newer than the 1.4.2 in user site. The
+  split fingerprint is identical across both (`cb67241e1200`), but for a clean
+  write-up run every experiment from the venv rather than mixing interpreters.
+
+### Federation config lives outside pyproject.toml (Flower ≥ 1.31)
+
+Flower moved SuperLink connection settings out of `[tool.flwr.federations]` into
+a global config file. The first `flwr run` migrates them automatically, comments
+out the old block in `pyproject.toml`, and writes `~/.flwr/config.toml`:
+
+```toml
+[superlink]
+default = "local-simulation"
+
+[superlink.local-simulation]
+address = ":local:"
+options.num-supernodes = 5
+options.backend.name = "ray"
+options.backend.client-resources.num-cpus = 2
+```
+
+`options.num-supernodes` is what supplies `node_config["num-partitions"]` to each
+client, so it must equal `num-partitions` in `[tool.flwr.app.config]` —
+`server_app.py` raises if they disagree.
 
 ---
 
@@ -196,7 +225,11 @@ else, because every other number is measured against this one.
 | `_ARRAY_API not found` | numpy 2.x against torch 2.0.1. Reinstall with the `numpy<2` pin. |
 | `Expected more than 1 value per channel` | A BatchNorm training batch of size 1. `load_data` drops such a tail batch automatically; if it persists, raise `--batch-size` or `--min-partition-size`. |
 | `Federation has N supernodes but num-partitions=M` | `options.num-supernodes` and `num-partitions` disagree. They must match, or the baselines and the federation would use different shards. |
-| `DirichletPartitioner` raises at α=0.1 | It cannot satisfy `min_partition_size` on 640 samples. Lower `partition-min-size`, or record the infeasibility — it is a legitimate finding about small-cohort federated data. |
+| `DirichletPartitioner` raises at α=0.1 | It cannot satisfy `min_partition_size` on 640 samples. Lower `partition-min-size`, or record the infeasibility as a finding. (Observed to succeed at α=0.1 with a floor of 32, producing shards `[167, 267, 90, 44, 72]`.) |
+| **`'charmap' codec can't encode character '\U0001f338'`** | The `flwr` CLI prints an emoji to a cp1252 console. Set `$env:PYTHONIOENCODING="utf-8"` and `$env:PYTHONUTF8="1"` before running. |
+| **`exceeds the maximum directory depth of 10`** | A `.venv` inside `fl_rnaseq/` is being bundled into the FAB, and Ray's example files nest deeper than the limit. Put the venv in the repo root instead (§3). |
+| **`Unable to launch flower-superlink: [WinError 2]`** | The venv's `Scripts/` is not on `PATH`. Activate the venv rather than calling `.venv-fl\Scripts\flwr.exe` directly. |
+| `Device or resource busy` when deleting a venv | Orphaned `flower-superlink.exe` / `flower-superexec.exe` from a failed run still hold the files. `tasklist /FI "IMAGENAME eq flower-superlink.exe"`, then `taskkill /PID <pid> /F`. |
 | Ray fails / `flwr run` hangs on Windows | Use the Ray-free deployment runtime (below). |
 | `Activate.ps1 cannot be loaded` | `Set-ExecutionPolicy -Scope Process RemoteSigned` |
 

@@ -233,3 +233,6 @@ gene+expression+cancer+rna+seq/
 fl_rnaseq/results/**/*.pt
 fl_rnaseq/**/final_model.pt
 fl_rnaseq/.cache/
+
+# Project venv (kept outside fl_rnaseq/ so `flwr run .` can bundle the app)
+.venv-fl/

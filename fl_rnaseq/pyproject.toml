@@ -78,17 +78,33 @@ data-dir = "../gene+expression+cancer+rna+seq/TCGA-PANCAN-HiSeq-801x20531"
 results-dir = "results"
 save-model = false
 
-[tool.flwr.federations]
-default = "local-simulation"
 
-[tool.flwr.federations.local-simulation]
-# Supplies node_config["num-partitions"] to each ClientApp.
-options.num-supernodes = 5
-options.backend.client-resources.num-cpus = 2
-options.backend.client-resources.num-gpus = 0.0
+#######################################################################
+# CONFIGURATION MIGRATION NOTICE:
+#
+# What was previously called "federation config" for SuperLink
+# connections in pyproject.toml has been renamed and moved.
+#
+# These settings are now **SuperLink connection configuration**
+# and are defined in the Flower configuration file.
+#
+# The entries below are commented out intentionally and are kept
+# only as a migration reference.
+#
+# Docs: https://flower.ai/docs/framework/ref-flower-configuration.html
+#######################################################################
 
-# Ray-free fallback: run flower-superlink plus one flower-supernode per client.
-# See RUNNING.md.
-[tool.flwr.federations.local-deployment]
-address = "127.0.0.1:9093"
-insecure = true
+# [tool.flwr.federations]
+# default = "local-simulation"
+
+# [tool.flwr.federations.local-simulation]
+# # Supplies node_config["num-partitions"] to each ClientApp.
+# options.num-supernodes = 5
+# options.backend.client-resources.num-cpus = 2
+# options.backend.client-resources.num-gpus = 0.0
+
+# # Ray-free fallback: run flower-superlink plus one flower-supernode per client.
+# # See RUNNING.md.
+# [tool.flwr.federations.local-deployment]
+# address = "127.0.0.1:9093"
+# insecure = true

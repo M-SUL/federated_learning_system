@@ -1,0 +1,319 @@
+{
+  "experiment": "centralized_mlp_30ep",
+  "slug": "mlp_30ep",
+  "timestamp": "2026-09-07T20:43:54.344776+00:00",
+  "git_commit": "5f0e2d3",
+  "env": {
+    "python": "3.11.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "torch": "2.0.1",
+    "numpy": "1.24.3",
+    "pandas": "2.2.2",
+    "scikit_learn": "1.4.2",
+    "flwr": null,
+    "flwr_datasets": null,
+    "cuda_available": false
+  },
+  "config": {
+    "model": "MLP",
+    "epochs": 30,
+    "lr": 0.001,
+    "batch_size": 32,
+    "seed": 42,
+    "data_dir": "../gene+expression+cancer+rna+seq/TCGA-PANCAN-HiSeq-801x20531"
+  },
+  "split_fingerprint": {
+    "n_train": 640,
+    "n_test": 161,
+    "stratified": true,
+    "split_seed": 42,
+    "test_idx_sha1": "cb67241e1200",
+    "test_class_counts": {
+      "BRCA": 60,
+      "COAD": 16,
+      "KIRC": 30,
+      "LUAD": 28,
+      "PRAD": 27
+    }
+  },
+  "model": {
+    "params": 10443269,
+    "bytes_per_model_fp32": 41773076,
+    "mb_per_model": 41.77,
+    "total_bytes": 83546152,
+    "total_gb": 0.084
+  },
+  "metrics": {
+    "accuracy": 1.0,
+    "macro_f1": 1.0,
+    "weighted_f1": 1.0,
+    "balanced_accuracy": 1.0,
+    "per_class": {
+      "BRCA": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 60
+      },
+      "COAD": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 16
+      },
+      "KIRC": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 30
+      },
+      "LUAD": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 28
+      },
+      "PRAD": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 27
+      }
+    },
+    "confusion_matrix": [
+      [
+        60,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        16,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        30,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        28,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        27
+      ]
+    ],
+    "classes_present_in_truth": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "classes_predicted": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "macro_auroc": 1.0,
+    "loss": 0.01007019013444089
+  },
+  "history": [
+    {
+      "round": 1,
+      "train_loss": 0.48194514494389296,
+      "val_loss": 0.1034095324575901,
+      "val_macro_f1": 0.9808657513348589
+    },
+    {
+      "round": 2,
+      "train_loss": 0.11768186232075095,
+      "val_loss": 0.029189756140112877,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 3,
+      "train_loss": 0.04095443862024695,
+      "val_loss": 0.01939899497665465,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 4,
+      "train_loss": 0.020699388871435076,
+      "val_loss": 0.017796921776607633,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 5,
+      "train_loss": 0.01562646761885844,
+      "val_loss": 0.0198439386440441,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 6,
+      "train_loss": 0.016895039938390255,
+      "val_loss": 0.010485734383109957,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 7,
+      "train_loss": 0.010817098678671755,
+      "val_loss": 0.0026582927093841136,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 8,
+      "train_loss": 0.0077282027414184995,
+      "val_loss": 0.015015698983916081,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 9,
+      "train_loss": 0.01464035522985796,
+      "val_loss": 0.02642778167501092,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 10,
+      "train_loss": 0.005553393933951156,
+      "val_loss": 0.019800633846898563,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 11,
+      "train_loss": 0.010749867353297304,
+      "val_loss": 0.0517088646593038,
+      "val_macro_f1": 0.9869444444444444
+    },
+    {
+      "round": 12,
+      "train_loss": 0.010159780013054842,
+      "val_loss": 0.0074040536128450185,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 13,
+      "train_loss": 0.035976828292405116,
+      "val_loss": 0.017359528166707605,
+      "val_macro_f1": 0.9913002364066195
+    },
+    {
+      "round": 14,
+      "train_loss": 0.012022502112813527,
+      "val_loss": 0.022392988638785027,
+      "val_macro_f1": 0.9913002364066195
+    },
+    {
+      "round": 15,
+      "train_loss": 0.012136434528656537,
+      "val_loss": 0.016817126777823432,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 16,
+      "train_loss": 0.007653810410374717,
+      "val_loss": 0.039796121782273985,
+      "val_macro_f1": 0.9913002364066195
+    },
+    {
+      "round": 17,
+      "train_loss": 0.00784701978591329,
+      "val_loss": 0.06329568759247195,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 18,
+      "train_loss": 0.0122547563551052,
+      "val_loss": 0.10650598091888241,
+      "val_macro_f1": 0.9827782707285813
+    },
+    {
+      "round": 19,
+      "train_loss": 0.005610412108580931,
+      "val_loss": 0.07523579883854836,
+      "val_macro_f1": 0.980597415773925
+    },
+    {
+      "round": 20,
+      "train_loss": 0.036611844795515935,
+      "val_loss": 0.0017466707477069576,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 21,
+      "train_loss": 0.01474533656892163,
+      "val_loss": 0.0015453211053682026,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 22,
+      "train_loss": 0.012244392661159509,
+      "val_loss": 0.009945753365173005,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 23,
+      "train_loss": 0.010239192044537049,
+      "val_loss": 0.024977209239295917,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 24,
+      "train_loss": 0.017494990048362524,
+      "val_loss": 0.042376574012450874,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 25,
+      "train_loss": 0.009934569359757006,
+      "val_loss": 0.006865522143016278,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 26,
+      "train_loss": 0.014839102801033732,
+      "val_loss": 0.07402247912978055,
+      "val_macro_f1": 0.9874113475177305
+    },
+    {
+      "round": 27,
+      "train_loss": 0.03538849528285937,
+      "val_loss": 0.01815972605254501,
+      "val_macro_f1": 0.9913002364066195
+    },
+    {
+      "round": 28,
+      "train_loss": 0.0026773301124194404,
+      "val_loss": 0.010555373068200424,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 29,
+      "train_loss": 0.006189749645272968,
+      "val_loss": 0.022789563663536683,
+      "val_macro_f1": 0.9934502923976607
+    },
+    {
+      "round": 30,
+      "train_loss": 0.02596758259096532,
+      "val_loss": 0.0022209981107153,
+      "val_macro_f1": 1.0
+    }
+  ]
+}

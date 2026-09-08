@@ -1,0 +1,175 @@
+{
+  "experiment": "centralized_mlp_6ep",
+  "slug": "mlp_6ep",
+  "timestamp": "2026-09-07T20:44:06.602176+00:00",
+  "git_commit": "5f0e2d3",
+  "env": {
+    "python": "3.11.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "torch": "2.0.1",
+    "numpy": "1.24.3",
+    "pandas": "2.2.2",
+    "scikit_learn": "1.4.2",
+    "flwr": null,
+    "flwr_datasets": null,
+    "cuda_available": false
+  },
+  "config": {
+    "model": "MLP",
+    "epochs": 6,
+    "lr": 0.001,
+    "batch_size": 32,
+    "seed": 42,
+    "data_dir": "../gene+expression+cancer+rna+seq/TCGA-PANCAN-HiSeq-801x20531"
+  },
+  "split_fingerprint": {
+    "n_train": 640,
+    "n_test": 161,
+    "stratified": true,
+    "split_seed": 42,
+    "test_idx_sha1": "cb67241e1200",
+    "test_class_counts": {
+      "BRCA": 60,
+      "COAD": 16,
+      "KIRC": 30,
+      "LUAD": 28,
+      "PRAD": 27
+    }
+  },
+  "model": {
+    "params": 10443269,
+    "bytes_per_model_fp32": 41773076,
+    "mb_per_model": 41.77,
+    "total_bytes": 83546152,
+    "total_gb": 0.084
+  },
+  "metrics": {
+    "accuracy": 0.9937888198757764,
+    "macro_f1": 0.994710743801653,
+    "weighted_f1": 0.993758020635491,
+    "balanced_accuracy": 0.9928571428571429,
+    "per_class": {
+      "BRCA": {
+        "precision": 0.9836065573770492,
+        "recall": 1.0,
+        "f1": 0.9917355371900827,
+        "support": 60
+      },
+      "COAD": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 16
+      },
+      "KIRC": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 30
+      },
+      "LUAD": {
+        "precision": 1.0,
+        "recall": 0.9642857142857143,
+        "f1": 0.9818181818181818,
+        "support": 28
+      },
+      "PRAD": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 27
+      }
+    },
+    "confusion_matrix": [
+      [
+        60,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        16,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        30,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        27,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        27
+      ]
+    ],
+    "classes_present_in_truth": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "classes_predicted": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "macro_auroc": 0.9999462943071965,
+    "loss": 0.022940433520522916
+  },
+  "history": [
+    {
+      "round": 1,
+      "train_loss": 0.48194514494389296,
+      "val_loss": 0.1034095324575901,
+      "val_macro_f1": 0.9808657513348589
+    },
+    {
+      "round": 2,
+      "train_loss": 0.11768186232075095,
+      "val_loss": 0.029189756140112877,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 3,
+      "train_loss": 0.04095443862024695,
+      "val_loss": 0.01939899497665465,
+      "val_macro_f1": 1.0
+    },
+    {
+      "round": 4,
+      "train_loss": 0.020699388871435076,
+      "val_loss": 0.017796921776607633,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 5,
+      "train_loss": 0.01562646761885844,
+      "val_loss": 0.0198439386440441,
+      "val_macro_f1": 0.9934936998854524
+    },
+    {
+      "round": 6,
+      "train_loss": 0.016895039938390255,
+      "val_loss": 0.010485734383109957,
+      "val_macro_f1": 0.9934936998854524
+    }
+  ]
+}
