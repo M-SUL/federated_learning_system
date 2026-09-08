@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Federation Console — FL RNA-seq</title>
+<link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <strong>Federation Console</strong>
+      <span class="tiny">TCGA PANCAN RNA-seq · 5 sites · FedAvg</span>
+    </div>
+    <span id="status" class="pill idle">Loading</span>
+  </header>
+
+  <nav id="tabs" class="tabs"></nav>
+  <div id="warnings" class="warnings" hidden></div>
+  <main id="main"></main>
+
+  <footer class="foot tiny">
+    Observe-only: this dashboard reads an append-only event log and never starts,
+    stops, or configures training.
+  </footer>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

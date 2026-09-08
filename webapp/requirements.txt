@@ -1,0 +1,4 @@
+# Installed into .venv-web, NOT .venv-fl: the training venv holds a numpy<2 pin
+# protecting torch 2.0.1's ABI, and re-resolving it is a defence-day outage risk.
+fastapi>=0.110
+uvicorn>=0.27

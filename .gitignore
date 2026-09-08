@@ -236,3 +236,10 @@ fl_rnaseq/.cache/
 
 # Project venv (kept outside fl_rnaseq/ so `flwr run .` can bundle the app)
 .venv-fl/
+
+# Live dashboard event logs (results/** is otherwise tracked)
+fl_rnaseq/results/live/
+
+# Dashboard venv (kept separate from .venv-fl so its deps cannot disturb the
+# numpy<2 pin that protects torch)
+.venv-web/

@@ -78,6 +78,17 @@ data-dir = "../gene+expression+cancer+rna+seq/TCGA-PANCAN-HiSeq-801x20531"
 results-dir = "results"
 save-model = false
 
+# --- live dashboard (observe-only; never affects training) -------------------
+# Absolute directory for live event logs. Empty = <results-dir>/live, resolved
+# against CWD. Set explicitly for `local-deployment`, where the ServerApp's CWD
+# is the extracted FAB rather than the repo. Env FL_RNASEQ_LIVE_DIR wins over both.
+live-dir = ""
+# Clients report shard size and label histogram alongside weights, for the
+# dashboard only. This is telemetry, NOT part of FedAvg -- it rides in a
+# ConfigRecord, which aggregation ignores. Set false and replies are
+# byte-identical to a run without the dashboard.
+emit-site-telemetry = true
+
 
 #######################################################################
 # CONFIGURATION MIGRATION NOTICE:

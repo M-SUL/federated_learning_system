@@ -88,11 +88,19 @@ def communication_cost(model: torch.nn.Module, num_clients: int, num_rounds: int
     }
 
 
+# Defaults from [tool.flwr.app.config]. A run matching these keeps the plain
+# slug; anything else is suffixed, so a variant cannot land on the canonical
+# result's directory.
+DEFAULT_NORM = "batch"
+DEFAULT_NUM_ROUNDS = 10
+
+
 def run_slug(
     strategy: str,
     alpha: float | None = None,
     seed: int = 42,
-    norm: str = "batch",
+    norm: str = DEFAULT_NORM,
+    num_rounds: int | None = None,
 ) -> str:
     """Canonical directory name for one experiment configuration.
 
@@ -100,12 +108,17 @@ def run_slug(
 
     Every knob that changes the result must appear here, or two different
     experiments write to the same directory and the second silently destroys the
-    first. `norm` is suffixed only when it differs from the default, so existing
-    result paths keep their names.
+    first -- a 2-round smoke test once overwrote a committed 10-round result this
+    way. Suffixes are added only for non-default values, so existing result paths
+    keep their names.
     """
     base = f"iid_seed{seed}" if (strategy == "iid" or alpha is None) \
         else f"{strategy}_a{alpha}_seed{seed}"
-    return base if norm == "batch" else f"{base}_norm-{norm}"
+    if norm != DEFAULT_NORM:
+        base = f"{base}_norm-{norm}"
+    if num_rounds is not None and num_rounds != DEFAULT_NUM_ROUNDS:
+        base = f"{base}_r{num_rounds}"
+    return base
 
 
 def _jsonable(obj: Any) -> Any:
