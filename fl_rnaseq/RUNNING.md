@@ -206,13 +206,30 @@ cd <repo root>
 Run it — two terminals, and the order does not matter:
 
 ```powershell
-# terminal 1 — the dashboard
+# terminal 1 — the dashboard (from the repo root)
 .\.venv-web\Scripts\python.exe webapp\serve.py        # http://127.0.0.1:8000
+```
 
+```powershell
 # terminal 2 — a federation (optional; the first four views work without one)
 cd fl_rnaseq
-flwr run . local-simulation --run-config "partition-strategy='dirichlet' dirichlet-alpha=0.1"
+$env:PYTHONIOENCODING="utf-8"; $env:PYTHONUTF8="1"
+& ..\.venv-fl\Scripts\flwr.exe run . local-simulation --run-config "partition-strategy='dirichlet' dirichlet-alpha=0.1"
 ```
+
+The same thing in **cmd.exe** (`set` instead of `$env:`, and no leading `&`):
+
+```cmd
+cd /d <repo root>\fl_rnaseq
+set PYTHONIOENCODING=utf-8
+set PYTHONUTF8=1
+..\.venv-fl\Scripts\flwr.exe run . local-simulation --run-config "partition-strategy='dirichlet' dirichlet-alpha=0.1"
+```
+
+Calling `flwr.exe` by its full path avoids needing the venv on `PATH` at all —
+a bare `flwr` gives *"'flwr' is not recognized"* unless the venv is activated.
+Note `flwr run` **returns immediately**: it submits the run and exits while
+training continues for several minutes. Watch the dashboard, or `results/live/`.
 
 **Observe-only.** The dashboard never starts, stops, or configures training — it
 tails an append-only event log the ServerApp writes to `results/live/`. The
