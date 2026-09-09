@@ -3,6 +3,13 @@
 gene+expression+cancer+rna+seq/
 *.tar.gz
 
+# Credentials must never enter the build context. The Dockerfile copies only
+# named paths today, so nothing leaks -- but a later `COPY . .` would bake the
+# password into a public image layer, where it is permanent.
+.env
+.env.*
+!.env.example
+
 .git/
 .venv*/
 **/__pycache__/
