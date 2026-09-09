@@ -1,0 +1,299 @@
+{
+  "partitions": [
+    {
+      "slug": "iid_seed42",
+      "strategy": "iid",
+      "alpha": null,
+      "status": "ok",
+      "seed": 42,
+      "heterogeneity_js": 0.005241454904662708,
+      "shard_sizes": [
+        128,
+        128,
+        128,
+        128,
+        128
+      ],
+      "classes_per_client": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "label_counts": {
+        "client_0": {
+          "BRCA": 50,
+          "COAD": 14,
+          "KIRC": 22,
+          "LUAD": 24,
+          "PRAD": 18
+        },
+        "client_1": {
+          "BRCA": 46,
+          "COAD": 10,
+          "KIRC": 18,
+          "LUAD": 24,
+          "PRAD": 30
+        },
+        "client_2": {
+          "BRCA": 50,
+          "COAD": 18,
+          "KIRC": 23,
+          "LUAD": 16,
+          "PRAD": 21
+        },
+        "client_3": {
+          "BRCA": 55,
+          "COAD": 8,
+          "KIRC": 24,
+          "LUAD": 25,
+          "PRAD": 16
+        },
+        "client_4": {
+          "BRCA": 39,
+          "COAD": 12,
+          "KIRC": 29,
+          "LUAD": 24,
+          "PRAD": 24
+        }
+      }
+    },
+    {
+      "slug": "dirichlet_a1.0_seed42",
+      "strategy": "dirichlet",
+      "alpha": 1.0,
+      "status": "ok",
+      "seed": 42,
+      "heterogeneity_js": 0.11495702279158518,
+      "shard_sizes": [
+        125,
+        123,
+        208,
+        100,
+        84
+      ],
+      "classes_per_client": [
+        5,
+        5,
+        5,
+        4,
+        5
+      ],
+      "label_counts": {
+        "client_0": {
+          "BRCA": 77,
+          "COAD": 12,
+          "KIRC": 1,
+          "LUAD": 9,
+          "PRAD": 26
+        },
+        "client_1": {
+          "BRCA": 74,
+          "COAD": 12,
+          "KIRC": 28,
+          "LUAD": 5,
+          "PRAD": 4
+        },
+        "client_2": {
+          "BRCA": 77,
+          "COAD": 28,
+          "KIRC": 45,
+          "LUAD": 19,
+          "PRAD": 39
+        },
+        "client_3": {
+          "BRCA": 9,
+          "COAD": 0,
+          "KIRC": 10,
+          "LUAD": 55,
+          "PRAD": 26
+        },
+        "client_4": {
+          "BRCA": 3,
+          "COAD": 10,
+          "KIRC": 32,
+          "LUAD": 25,
+          "PRAD": 14
+        }
+      }
+    },
+    {
+      "slug": "dirichlet_a0.5_seed42",
+      "strategy": "dirichlet",
+      "alpha": 0.5,
+      "status": "ok",
+      "seed": 42,
+      "heterogeneity_js": 0.15233087305728965,
+      "shard_sizes": [
+        210,
+        141,
+        33,
+        151,
+        105
+      ],
+      "classes_per_client": [
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "label_counts": {
+        "client_0": {
+          "BRCA": 67,
+          "COAD": 3,
+          "KIRC": 80,
+          "LUAD": 23,
+          "PRAD": 37
+        },
+        "client_1": {
+          "BRCA": 107,
+          "COAD": 10,
+          "KIRC": 17,
+          "LUAD": 2,
+          "PRAD": 5
+        },
+        "client_2": {
+          "BRCA": 1,
+          "COAD": 7,
+          "KIRC": 1,
+          "LUAD": 6,
+          "PRAD": 18
+        },
+        "client_3": {
+          "BRCA": 63,
+          "COAD": 24,
+          "KIRC": 15,
+          "LUAD": 20,
+          "PRAD": 29
+        },
+        "client_4": {
+          "BRCA": 2,
+          "COAD": 18,
+          "KIRC": 3,
+          "LUAD": 62,
+          "PRAD": 20
+        }
+      }
+    },
+    {
+      "slug": "dirichlet_a0.1_seed42",
+      "strategy": "dirichlet",
+      "alpha": 0.1,
+      "status": "ok",
+      "seed": 42,
+      "heterogeneity_js": 0.3731550352515206,
+      "shard_sizes": [
+        167,
+        267,
+        90,
+        44,
+        72
+      ],
+      "classes_per_client": [
+        3,
+        4,
+        3,
+        2,
+        5
+      ],
+      "label_counts": {
+        "client_0": {
+          "BRCA": 51,
+          "COAD": 0,
+          "KIRC": 5,
+          "LUAD": 111,
+          "PRAD": 0
+        },
+        "client_1": {
+          "BRCA": 145,
+          "COAD": 4,
+          "KIRC": 104,
+          "LUAD": 0,
+          "PRAD": 14
+        },
+        "client_2": {
+          "BRCA": 0,
+          "COAD": 0,
+          "KIRC": 6,
+          "LUAD": 1,
+          "PRAD": 83
+        },
+        "client_3": {
+          "BRCA": 43,
+          "COAD": 1,
+          "KIRC": 0,
+          "LUAD": 0,
+          "PRAD": 0
+        },
+        "client_4": {
+          "BRCA": 1,
+          "COAD": 57,
+          "KIRC": 1,
+          "LUAD": 1,
+          "PRAD": 12
+        }
+      }
+    },
+    {
+      "slug": "dirichlet-legacy_a0.5_seed42",
+      "strategy": "dirichlet-legacy",
+      "alpha": 0.5,
+      "status": "ok",
+      "seed": 42,
+      "heterogeneity_js": 0.16061063607109455,
+      "shard_sizes": [
+        97,
+        143,
+        85,
+        191,
+        124
+      ],
+      "classes_per_client": [
+        4,
+        4,
+        5,
+        5,
+        5
+      ],
+      "label_counts": {
+        "client_0": {
+          "BRCA": 13,
+          "COAD": 0,
+          "KIRC": 12,
+          "LUAD": 52,
+          "PRAD": 20
+        },
+        "client_1": {
+          "BRCA": 113,
+          "COAD": 9,
+          "KIRC": 10,
+          "LUAD": 11,
+          "PRAD": 0
+        },
+        "client_2": {
+          "BRCA": 1,
+          "COAD": 1,
+          "KIRC": 48,
+          "LUAD": 4,
+          "PRAD": 31
+        },
+        "client_3": {
+          "BRCA": 34,
+          "COAD": 47,
+          "KIRC": 20,
+          "LUAD": 42,
+          "PRAD": 48
+        },
+        "client_4": {
+          "BRCA": 79,
+          "COAD": 5,
+          "KIRC": 26,
+          "LUAD": 4,
+          "PRAD": 10
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "experiment": "federated_fedavg",
+  "slug": "dirichlet_a0.1_seed42",
+  "timestamp": "2026-09-08T19:35:09.247882+00:00",
+  "git_commit": "521afc1",
+  "env": {
+    "python": "3.11.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "torch": "2.0.1+cpu",
+    "numpy": "1.26.4",
+    "pandas": "3.0.5",
+    "scikit_learn": "1.9.0",
+    "flwr": "1.31.0",
+    "flwr_datasets": "0.6.0",
+    "cuda_available": false
+  },
+  "config": {
+    "strategy": "dirichlet",
+    "alpha": 0.1,
+    "num_rounds": 10,
+    "num_clients": 5,
+    "local_epochs": 3,
+    "lr": 0.001,
+    "batch_size": 32,
+    "seed": 42,
+    "norm": "batch",
+    "min_partition_size": 32,
+    "self_balancing": false,
+    "data_dir": "../gene+expression+cancer+rna+seq/TCGA-PANCAN-HiSeq-801x20531"
+  },
+  "split_fingerprint": {
+    "n_train": 640,
+    "n_test": 161,
+    "stratified": true,
+    "split_seed": 42,
+    "test_idx_sha1": "cb67241e1200",
+    "test_class_counts": {
+      "BRCA": 60,
+      "COAD": 16,
+      "KIRC": 30,
+      "LUAD": 28,
+      "PRAD": 27
+    }
+  },
+  "model": {
+    "params": 10443269,
+    "bytes_per_model_fp32": 41773076,
+    "mb_per_model": 41.77,
+    "total_bytes": 4177307600,
+    "total_gb": 4.177
+  },
+  "metrics": {
+    "accuracy": 0.9565217391304348,
+    "macro_f1": 0.9540659340659341,
+    "weighted_f1": 0.955561622642368,
+    "balanced_accuracy": 0.9392857142857143,
+    "per_class": {
+      "BRCA": {
+        "precision": 0.9090909090909091,
+        "recall": 1.0,
+        "f1": 0.9523809523809523,
+        "support": 60
+      },
+      "COAD": {
+        "precision": 1.0,
+        "recall": 0.875,
+        "f1": 0.9333333333333333,
+        "support": 16
+      },
+      "KIRC": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 30
+      },
+      "LUAD": {
+        "precision": 0.9583333333333334,
+        "recall": 0.8214285714285714,
+        "f1": 0.8846153846153846,
+        "support": 28
+      },
+      "PRAD": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 27
+      }
+    },
+    "confusion_matrix": [
+      [
+        60,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        14,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        30,
+        0,
+        0
+      ],
+      [
+        5,
+        0,
+        0,
+        23,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        27
+      ]
+    ],
+    "classes_present_in_truth": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "classes_predicted": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "macro_auroc": 0.9980128893662729,
+    "loss": 0.18064318532529083
+  },
+  "history": [
+    {
+      "round": 0,
+      "accuracy": 0.2919254658385093,
+      "macro_f1": 0.18321995464852608,
+      "loss": 1.5795305552689924
+    },
+    {
+      "round": 1,
+      "accuracy": 0.7453416149068323,
+      "macro_f1": 0.5952947380757061,
+      "loss": 0.6759592524226408
+    },
+    {
+      "round": 2,
+      "accuracy": 0.8571428571428571,
+      "macro_f1": 0.8279947694581841,
+      "loss": 0.4475705031282413
+    },
+    {
+      "round": 3,
+      "accuracy": 0.9440993788819876,
+      "macro_f1": 0.9441417497231452,
+      "loss": 0.3378897394452776
+    },
+    {
+      "round": 4,
+      "accuracy": 0.9627329192546584,
+      "macro_f1": 0.9617582417582418,
+      "loss": 0.2814169440950666
+    },
+    {
+      "round": 5,
+      "accuracy": 0.9440993788819876,
+      "macro_f1": 0.9441417497231452,
+      "loss": 0.24639169029567554
+    },
+    {
+      "round": 6,
+      "accuracy": 0.9751552795031055,
+      "macro_f1": 0.9757760194765673,
+      "loss": 0.2022404107988251
+    },
+    {
+      "round": 7,
+      "accuracy": 0.9627329192546584,
+      "macro_f1": 0.9597987421383648,
+      "loss": 0.18932592202417597
+    },
+    {
+      "round": 8,
+      "accuracy": 0.9627329192546584,
+      "macro_f1": 0.9597987421383648,
+      "loss": 0.18075000129131055
+    },
+    {
+      "round": 9,
+      "accuracy": 0.9565217391304348,
+      "macro_f1": 0.9540659340659341,
+      "loss": 0.197801745456198
+    },
+    {
+      "round": 10,
+      "accuracy": 0.9565217391304348,
+      "macro_f1": 0.9540659340659341,
+      "loss": 0.18064318532529083
+    }
+  ]
+}

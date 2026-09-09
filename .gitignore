@@ -3,7 +3,7 @@ __pycache__/
 *.py[codz]
 *$py.class
 
-.quickstart-pytorch
+quickstart-pytorch/
 
 
 # C extensions
@@ -219,3 +219,108 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Node (webapp/tests/*.mjs run on bare node today, but any future npm install
+# would otherwise land ~thousands of files in the repo)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.npm/
+
+# ---------------------------------------------------------------------------
+# Editors / IDEs
+# ---------------------------------------------------------------------------
+.idea/
+# .vscode holds both shared project config and per-machine state. Track the
+# three files a collaborator benefits from; ignore everything else in there.
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+*.code-workspace
+
+# Claude Code per-machine state (.claude/settings.json IS shared; the local
+# override and the transcript archives are not)
+.claude/settings.local.json
+.claude/*.local.json
+claude-chat-history*
+
+# ---------------------------------------------------------------------------
+# OS cruft
+# ---------------------------------------------------------------------------
+.DS_Store
+._*
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*~
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+
+# ---------------------------------------------------------------------------
+# Secrets - the dashboard has a password (DASHBOARD_PASSWORD) and can start
+# training runs, so nothing credential-shaped may ever be committed.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+secrets.toml
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+credentials.json
+service-account*.json
+
+# ---------------------------------------------------------------------------
+# Project-specific
+# ---------------------------------------------------------------------------
+
+# Dataset (~393 MB). Download from UCI - see fl_rnaseq/RUNNING.md.
+# prepare_data.py takes --data-dir, so the payload can land anywhere in the
+# tree: match the extracted directory and the intermediate files by name too.
+gene+expression+cancer+rna+seq/
+TCGA-PANCAN-HiSeq-801x20531/
+data_pruned.csv
+*.tar.gz
+*.zip
+*.partial
+
+# Model weights / arrays. Note: results/**/*.json and *.png are deliberately
+# NOT ignored - they are the evidence trail for the write-up and only KB in size.
+*.pt
+*.pth
+*.ckpt
+*.pkl
+*.joblib
+*.npy
+*.npz
+fl_rnaseq/.cache/
+
+# Flower runtime state. The real home is ~/.flwr (outside the repo), but
+# FLWR_HOME can point in-tree, and `flwr build` drops a .fab bundle in the CWD.
+.flwr/
+*.fab
+ray_results/
+ray-session-*/
+
+# Live dashboard event logs (results/** is otherwise tracked). Both the
+# default path and any RESULTS_DIR override that stays inside the repo.
+fl_rnaseq/results/live/
+**/results/live/
+*.jsonl
+
+# Local docker overrides (docker-compose.yml itself is tracked)
+docker-compose.override.yml
+docker-compose.*.local.yml
+
+# Venvs. .venv-fl is kept outside fl_rnaseq/ so `flwr run .` can bundle the
+# app; .venv-web is separate so its deps cannot disturb the numpy<2 pin that
+# protects torch.
+.venv-fl/
+.venv-web/
+.venv*/

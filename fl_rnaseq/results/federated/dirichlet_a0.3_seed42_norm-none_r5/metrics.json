@@ -1,0 +1,186 @@
+{
+  "experiment": "federated_fedavg",
+  "slug": "dirichlet_a0.3_seed42_norm-none_r5",
+  "timestamp": "2026-09-09T01:21:39.708818+00:00",
+  "git_commit": "b1032d6",
+  "env": {
+    "python": "3.11.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "torch": "2.0.1+cpu",
+    "numpy": "1.26.4",
+    "pandas": "3.0.5",
+    "scikit_learn": "1.9.0",
+    "flwr": "1.31.0",
+    "flwr_datasets": "0.6.0",
+    "cuda_available": false
+  },
+  "config": {
+    "strategy": "dirichlet",
+    "alpha": 0.3,
+    "num_rounds": 5,
+    "num_clients": 5,
+    "local_epochs": 3,
+    "lr": 0.001,
+    "batch_size": 32,
+    "seed": 42,
+    "norm": "none",
+    "min_partition_size": 32,
+    "self_balancing": false,
+    "data_dir": "../gene+expression+cancer+rna+seq/TCGA-PANCAN-HiSeq-801x20531"
+  },
+  "split_fingerprint": {
+    "n_train": 640,
+    "n_test": 161,
+    "stratified": true,
+    "split_seed": 42,
+    "test_idx_sha1": "cb67241e1200",
+    "test_class_counts": {
+      "BRCA": 60,
+      "COAD": 16,
+      "KIRC": 30,
+      "LUAD": 28,
+      "PRAD": 27
+    }
+  },
+  "model": {
+    "params": 10441989,
+    "bytes_per_model_fp32": 41767956,
+    "mb_per_model": 41.77,
+    "total_bytes": 2088397800,
+    "total_gb": 2.088,
+    "health": {
+      "failed_rounds": [],
+      "n_client_errors": 0,
+      "degraded": false
+    }
+  },
+  "metrics": {
+    "accuracy": 0.9875776397515528,
+    "macro_f1": 0.9847526373919336,
+    "weighted_f1": 0.9875031254605398,
+    "balanced_accuracy": 0.9803571428571429,
+    "per_class": {
+      "BRCA": {
+        "precision": 0.9836065573770492,
+        "recall": 1.0,
+        "f1": 0.9917355371900827,
+        "support": 60
+      },
+      "COAD": {
+        "precision": 1.0,
+        "recall": 0.9375,
+        "f1": 0.967741935483871,
+        "support": 16
+      },
+      "KIRC": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 30
+      },
+      "LUAD": {
+        "precision": 0.9642857142857143,
+        "recall": 0.9642857142857143,
+        "f1": 0.9642857142857143,
+        "support": 28
+      },
+      "PRAD": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 27
+      }
+    },
+    "confusion_matrix": [
+      [
+        60,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        15,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        30,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        27,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        27
+      ]
+    ],
+    "classes_present_in_truth": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "classes_predicted": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "macro_auroc": 0.9993979406644691,
+    "loss": 0.0928349511882996
+  },
+  "history": [
+    {
+      "round": 0,
+      "accuracy": 0.2919254658385093,
+      "macro_f1": 0.18321995464852608,
+      "loss": 1.5795304656769178
+    },
+    {
+      "round": 1,
+      "accuracy": 0.9751552795031055,
+      "macro_f1": 0.9690880774469424,
+      "loss": 0.1184918882082338
+    },
+    {
+      "round": 2,
+      "accuracy": 0.9937888198757764,
+      "macro_f1": 0.9900396151669497,
+      "loss": 0.0475314192705996
+    },
+    {
+      "round": 3,
+      "accuracy": 0.9875776397515528,
+      "macro_f1": 0.9797701149425289,
+      "loss": 0.03089327619682928
+    },
+    {
+      "round": 4,
+      "accuracy": 0.9937888198757764,
+      "macro_f1": 0.9900396151669497,
+      "loss": 0.036039226127337225
+    },
+    {
+      "round": 5,
+      "accuracy": 0.9875776397515528,
+      "macro_f1": 0.9847526373919336,
+      "loss": 0.0928349511882996
+    }
+  ]
+}

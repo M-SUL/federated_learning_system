@@ -1,0 +1,1091 @@
+{
+  "experiment": "local_only",
+  "slug": "dirichlet-legacy_a1.0_seed42",
+  "timestamp": "2026-09-07T20:46:07.007939+00:00",
+  "git_commit": "5f0e2d3",
+  "env": {
+    "python": "3.11.4",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "torch": "2.0.1",
+    "numpy": "1.24.3",
+    "pandas": "2.2.2",
+    "scikit_learn": "1.4.2",
+    "flwr": null,
+    "flwr_datasets": null,
+    "cuda_available": false
+  },
+  "config": {
+    "strategy": "dirichlet-legacy",
+    "alpha": 1.0,
+    "num_clients": 5,
+    "epochs": 30,
+    "lr": 0.001,
+    "batch_size": 32,
+    "seed": 42,
+    "min_partition_size": 32,
+    "self_balancing": false,
+    "data_dir": "../gene+expression+cancer+rna+seq/TCGA-PANCAN-HiSeq-801x20531"
+  },
+  "split_fingerprint": {
+    "n_train": 640,
+    "n_test": 161,
+    "stratified": true,
+    "split_seed": 42,
+    "test_idx_sha1": "cb67241e1200",
+    "test_class_counts": {
+      "BRCA": 60,
+      "COAD": 16,
+      "KIRC": 30,
+      "LUAD": 28,
+      "PRAD": 27
+    }
+  },
+  "model": {
+    "model": "MLP",
+    "isolated": true
+  },
+  "metrics": {
+    "global_accuracy": {
+      "mean": 0.9838509316770185,
+      "std": 0.0074534161490682925,
+      "min": 0.968944099378882,
+      "max": 0.9875776397515528
+    },
+    "global_macro_f1": {
+      "mean": 0.9824177119694971,
+      "std": 0.00945381200487324,
+      "min": 0.9639554769276131,
+      "max": 0.9893139040680025
+    },
+    "local_val_accuracy": {
+      "mean": 0.9954545454545455,
+      "std": 0.009090909090909084,
+      "min": 0.9772727272727273,
+      "max": 1.0
+    },
+    "heterogeneity_js": 0.07431874404179416,
+    "n_clients_ok": 5,
+    "n_clients_degenerate": 0,
+    "accuracy": 0.9838509316770185,
+    "macro_f1": 0.9824177119694971,
+    "per_class": {
+      "BRCA": {
+        "recall": 0.9933333333333334,
+        "f1": 0.98509482102013,
+        "support": 60
+      },
+      "COAD": {
+        "recall": 0.95,
+        "f1": 0.9737634408602152,
+        "support": 16
+      },
+      "KIRC": {
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 30
+      },
+      "LUAD": {
+        "recall": 0.95,
+        "f1": 0.9603731551099972,
+        "support": 28
+      },
+      "PRAD": {
+        "recall": 1.0,
+        "f1": 0.9928571428571429,
+        "support": 27
+      }
+    }
+  },
+  "per_client": [
+    {
+      "client_id": 0,
+      "status": "ok",
+      "n_train": 88,
+      "n_val": 21,
+      "n_classes_seen": 5,
+      "label_counts": {
+        "BRCA": 18,
+        "COAD": 22,
+        "KIRC": 7,
+        "LUAD": 17,
+        "PRAD": 45
+      },
+      "train_loss": 0.14589483368520936,
+      "global": {
+        "accuracy": 0.9875776397515528,
+        "macro_f1": 0.9847526373919336,
+        "weighted_f1": 0.9875031254605398,
+        "balanced_accuracy": 0.9803571428571429,
+        "per_class": {
+          "BRCA": {
+            "precision": 0.9836065573770492,
+            "recall": 1.0,
+            "f1": 0.9917355371900827,
+            "support": 60
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 0.9375,
+            "f1": 0.967741935483871,
+            "support": 16
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 30
+          },
+          "LUAD": {
+            "precision": 0.9642857142857143,
+            "recall": 0.9642857142857143,
+            "f1": 0.9642857142857143,
+            "support": 28
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            60,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            15,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            30,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            27,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            27
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 0.9998063817178414,
+        "loss": 0.06527106732315158
+      },
+      "local_val": {
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "weighted_f1": 1.0,
+        "balanced_accuracy": 1.0,
+        "per_class": {
+          "BRCA": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 6
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 2
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 2
+          },
+          "LUAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 2
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 9
+          }
+        },
+        "confusion_matrix": [
+          [
+            6,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            9
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 1.0,
+        "loss": 0.023033389023372104
+      },
+      "seconds": 11.0
+    },
+    {
+      "client_id": 1,
+      "status": "ok",
+      "n_train": 75,
+      "n_val": 18,
+      "n_classes_seen": 5,
+      "label_counts": {
+        "BRCA": 16,
+        "COAD": 9,
+        "KIRC": 41,
+        "LUAD": 22,
+        "PRAD": 5
+      },
+      "train_loss": 0.1604349325928423,
+      "global": {
+        "accuracy": 0.9875776397515528,
+        "macro_f1": 0.9847526373919336,
+        "weighted_f1": 0.9875031254605398,
+        "balanced_accuracy": 0.9803571428571429,
+        "per_class": {
+          "BRCA": {
+            "precision": 0.9836065573770492,
+            "recall": 1.0,
+            "f1": 0.9917355371900827,
+            "support": 60
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 0.9375,
+            "f1": 0.967741935483871,
+            "support": 16
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 30
+          },
+          "LUAD": {
+            "precision": 0.9642857142857143,
+            "recall": 0.9642857142857143,
+            "f1": 0.9642857142857143,
+            "support": 28
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            60,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            15,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            30,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            27,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            27
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 0.9980464953047399,
+        "loss": 0.10060533307353903
+      },
+      "local_val": {
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "weighted_f1": 1.0,
+        "balanced_accuracy": 1.0,
+        "per_class": {
+          "BRCA": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 3
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 2
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 9
+          },
+          "LUAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 2
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 2
+          }
+        },
+        "confusion_matrix": [
+          [
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            9,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            2
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 1.0,
+        "loss": 0.0624071823226081
+      },
+      "seconds": 10.2
+    },
+    {
+      "client_id": 2,
+      "status": "ok",
+      "n_train": 177,
+      "n_val": 44,
+      "n_classes_seen": 5,
+      "label_counts": {
+        "BRCA": 109,
+        "COAD": 22,
+        "KIRC": 6,
+        "LUAD": 37,
+        "PRAD": 47
+      },
+      "train_loss": 0.09166940879982172,
+      "global": {
+        "accuracy": 0.9875776397515528,
+        "macro_f1": 0.9893139040680025,
+        "weighted_f1": 0.9874494186682355,
+        "balanced_accuracy": 0.9857142857142858,
+        "per_class": {
+          "BRCA": {
+            "precision": 0.967741935483871,
+            "recall": 1.0,
+            "f1": 0.9836065573770492,
+            "support": 60
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 16
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 30
+          },
+          "LUAD": {
+            "precision": 1.0,
+            "recall": 0.9285714285714286,
+            "f1": 0.9629629629629629,
+            "support": 28
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            60,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            16,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            30,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0,
+            26,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            27
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 0.9999462943071965,
+        "loss": 0.05182530615270508
+      },
+      "local_val": {
+        "accuracy": 0.9772727272727273,
+        "macro_f1": 0.9151515151515153,
+        "weighted_f1": 0.9800275482093664,
+        "balanced_accuracy": 0.9666666666666668,
+        "per_class": {
+          "BRCA": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 23
+          },
+          "COAD": {
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "support": 1
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 3
+          },
+          "LUAD": {
+            "precision": 1.0,
+            "recall": 0.8333333333333334,
+            "f1": 0.9090909090909091,
+            "support": 6
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 11
+          }
+        },
+        "confusion_matrix": [
+          [
+            23,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            5,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            11
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 1.0,
+        "loss": 0.06700896674936468
+      },
+      "seconds": 22.9
+    },
+    {
+      "client_id": 3,
+      "status": "ok",
+      "n_train": 80,
+      "n_val": 19,
+      "n_classes_seen": 5,
+      "label_counts": {
+        "BRCA": 28,
+        "COAD": 5,
+        "KIRC": 35,
+        "LUAD": 26,
+        "PRAD": 5
+      },
+      "train_loss": 0.13644413062267832,
+      "global": {
+        "accuracy": 0.968944099378882,
+        "macro_f1": 0.9639554769276131,
+        "weighted_f1": 0.9688370084876055,
+        "balanced_accuracy": 0.9611904761904763,
+        "per_class": {
+          "BRCA": {
+            "precision": 0.9830508474576272,
+            "recall": 0.9666666666666667,
+            "f1": 0.9747899159663865,
+            "support": 60
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 0.875,
+            "f1": 0.9333333333333333,
+            "support": 16
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 30
+          },
+          "LUAD": {
+            "precision": 0.9310344827586207,
+            "recall": 0.9642857142857143,
+            "f1": 0.9473684210526315,
+            "support": 28
+          },
+          "PRAD": {
+            "precision": 0.9310344827586207,
+            "recall": 1.0,
+            "f1": 0.9642857142857143,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            58,
+            0,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            14,
+            0,
+            2,
+            0
+          ],
+          [
+            0,
+            0,
+            30,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            27,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            27
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 0.996405566739033,
+        "loss": 0.1359458739713112
+      },
+      "local_val": {
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "weighted_f1": 1.0,
+        "balanced_accuracy": 1.0,
+        "per_class": {
+          "BRCA": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 7
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 1
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 5
+          },
+          "LUAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 5
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 1
+          }
+        },
+        "confusion_matrix": [
+          [
+            7,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            5,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            5,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 1.0,
+        "loss": 0.05113638388483148
+      },
+      "seconds": 11.3
+    },
+    {
+      "client_id": 4,
+      "status": "ok",
+      "n_train": 95,
+      "n_val": 23,
+      "n_classes_seen": 5,
+      "label_counts": {
+        "BRCA": 69,
+        "COAD": 4,
+        "KIRC": 27,
+        "LUAD": 11,
+        "PRAD": 7
+      },
+      "train_loss": 0.17289458225584692,
+      "global": {
+        "accuracy": 0.9875776397515528,
+        "macro_f1": 0.9893139040680025,
+        "weighted_f1": 0.9874494186682355,
+        "balanced_accuracy": 0.9857142857142858,
+        "per_class": {
+          "BRCA": {
+            "precision": 0.967741935483871,
+            "recall": 1.0,
+            "f1": 0.9836065573770492,
+            "support": 60
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 16
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 30
+          },
+          "LUAD": {
+            "precision": 1.0,
+            "recall": 0.9285714285714286,
+            "f1": 0.9629629629629629,
+            "support": 28
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 27
+          }
+        },
+        "confusion_matrix": [
+          [
+            60,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            16,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            30,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0,
+            26,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            27
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 0.9995915589466277,
+        "loss": 0.11489384514944893
+      },
+      "local_val": {
+        "accuracy": 1.0,
+        "macro_f1": 1.0,
+        "weighted_f1": 1.0,
+        "balanced_accuracy": 1.0,
+        "per_class": {
+          "BRCA": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 9
+          },
+          "COAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 1
+          },
+          "KIRC": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 7
+          },
+          "LUAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 5
+          },
+          "PRAD": {
+            "precision": 1.0,
+            "recall": 1.0,
+            "f1": 1.0,
+            "support": 1
+          }
+        },
+        "confusion_matrix": [
+          [
+            9,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            7,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            5,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        ],
+        "classes_present_in_truth": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "classes_predicted": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "macro_auroc": 1.0,
+        "loss": 0.05045318085214366
+      },
+      "seconds": 11.5
+    }
+  ]
+}
