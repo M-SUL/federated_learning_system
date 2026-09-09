@@ -22,6 +22,12 @@ function h(tag, attrs = {}, kids = []) {
     if (k === 'class') n.className = v;
     else if (k === 'html') n.innerHTML = v;
     else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    // Boolean attributes (disabled, checked, hidden, selected) are true by
+    // PRESENCE: setAttribute('disabled', 'false') disables the element just as
+    // firmly as 'true'. So a false boolean must omit the attribute entirely --
+    // otherwise `disabled: !!busy` disables the control exactly when it should
+    // be usable. Strings such as aria-expanded="false" still take the path below.
+    else if (typeof v === 'boolean') { if (v) n.setAttribute(k, ''); }
     else n.setAttribute(k, String(v));
   }
   for (const c of [].concat(kids)) {
@@ -466,11 +472,18 @@ function launchPanel(state) {
       (v) => (v === 'iid' ? 'IID (uniform)' : v === 'dirichlet' ? 'Dirichlet (non-IID)'
         : 'Dirichlet (legacy partitioner)')),
     isIid ? null : field('alpha', 'Alpha', o.alpha, (v) => `${v}${v <= 0.1 ? '  (extreme)' : ''}`),
+    field('clients', 'Sites', o.clients, (v) => `${v} sites  (~${Math.floor(640 / v)} samples each)`),
     field('rounds', 'Rounds', o.rounds),
     field('norm', 'Normalisation', o.norm,
       (v) => (v === 'batch' ? 'BatchNorm' : v === 'layer' ? 'LayerNorm' : 'None')),
     field('seed', 'Seed', o.seed),
   ].filter(Boolean);
+
+  // Client count is not a per-run setting: it lives in the Flower config and is
+  // read by the SuperLink at startup, so changing it restarts that first.
+  const clientsChanging = info.current_clients !== null
+    && info.current_clients !== undefined
+    && Number(sel.clients) !== Number(info.current_clients);
 
   return h('div', { class: 'launch' }, [
     h('h3', {}, 'Start a federation'),
@@ -489,6 +502,11 @@ function launchPanel(state) {
     busy ? h('p', { class: 'note' },
       'Only one run at a time. Concurrent simulations exhaust memory — clients die '
       + 'mid-round and the global model silently stops updating.') : null,
+    clientsChanging && !busy ? h('p', { class: 'note' },
+      `Site count is currently ${info.current_clients}. Changing it rewrites `
+      + 'the Flower config and restarts the SuperLink before the run starts, '
+      + 'because the number of sites is fixed when that process launches — '
+      + 'it is not a per-run setting. Adds a few seconds.') : null,
     state.launchError ? h('p', { class: 'alert' }, state.launchError) : null,
   ]);
 }

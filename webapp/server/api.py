@@ -125,6 +125,10 @@ def create_app(
             "options": runner_mod.options(),
             "busy": busy,
             "last_error": launcher.last_error,
+            # Changing this rewrites ~/.flwr/config.toml and restarts the
+            # SuperLink, so the UI can warn that it is not a per-run knob.
+            "current_clients": runner_mod.current_supernodes(),
+            "flwr_config": str(runner_mod.FLWR_CONFIG),
         }
 
     @app.post("/api/run")

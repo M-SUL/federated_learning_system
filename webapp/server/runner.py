@@ -41,6 +41,19 @@ ALPHAS = (0.1, 0.3, 0.5, 1.0)
 NORMS = ("batch", "layer", "none")
 ROUNDS = (2, 3, 5, 10, 15, 20)
 SEEDS = (42, 43, 44)
+# Capped at 10: every client is a Ray worker holding its own shard, and the 640
+# training samples get thin fast (64 each at 10 clients, which the dirichlet
+# strategy's 32-sample floor can struggle to satisfy at low alpha).
+CLIENTS = (2, 3, 5, 8, 10)
+
+# The client count lives in TWO files that must agree, or server_app raises:
+#   ~/.flwr/config.toml   options.num-supernodes  -- how many clients Flower runs
+#   pyproject.toml        num-partitions          -- how many shards the data splits into
+# --run-config can set the second but not the first: num-supernodes is SuperLink
+# connection config, not run config. So changing the client count means editing
+# the Flower config file and restarting the SuperLink to pick it up.
+FLWR_CONFIG = Path.home() / ".flwr" / "config.toml"
+_SUPERNODES_RE = re.compile(r"^(\s*options\.num-supernodes\s*=\s*)(\d+)\s*$", re.MULTILINE)
 
 # `flwr run` should return in a few seconds; anything longer means it is stuck
 # (a port conflict, or a SuperLink that will not start) and we want the error.
@@ -76,7 +89,47 @@ def options() -> dict:
         "norm": list(NORMS),
         "rounds": list(ROUNDS),
         "seed": list(SEEDS),
+        "clients": list(CLIENTS),
     }
+
+
+def current_supernodes() -> int | None:
+    """How many clients the Flower config is currently set to spawn."""
+    try:
+        match = _SUPERNODES_RE.search(FLWR_CONFIG.read_text(encoding="utf-8"))
+        return int(match.group(2)) if match else None
+    except OSError:
+        return None
+
+
+def set_supernodes(n: int) -> tuple[bool, str]:
+    """Point the Flower config at `n` clients. Returns (changed, message).
+
+    Touches exactly one line and only when the value differs, so an unrelated
+    edit in the user's config is never clobbered. The SuperLink reads this at
+    startup, so the caller must restart it for a change to take effect.
+    """
+    if n not in CLIENTS:
+        return False, f"{n} is not an offered client count"
+    try:
+        text = FLWR_CONFIG.read_text(encoding="utf-8")
+    except OSError as exc:
+        return False, f"cannot read {FLWR_CONFIG}: {exc}"
+
+    match = _SUPERNODES_RE.search(text)
+    if not match:
+        return False, f"no options.num-supernodes line in {FLWR_CONFIG}"
+    if int(match.group(2)) == n:
+        return False, "already set"
+
+    try:
+        FLWR_CONFIG.write_text(
+            _SUPERNODES_RE.sub(lambda m: f"{m.group(1)}{n}", text, count=1),
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        return False, f"cannot write {FLWR_CONFIG}: {exc}"
+    return True, f"num-supernodes {match.group(2)} -> {n}"
 
 
 class ValidationError(ValueError):
@@ -102,10 +155,11 @@ def _validate(payload: dict) -> dict:
         "rounds": pick("rounds", ROUNDS, int),
         "norm": pick("norm", NORMS, str),
         "seed": pick("seed", SEEDS, int),
+        "clients": pick("clients", CLIENTS, int),
         # alpha is meaningless for iid; accept it but do not pass it on.
         "alpha": None if strategy == "iid" else pick("alpha", ALPHAS, float),
     }
-    unexpected = set(payload) - {"strategy", "rounds", "norm", "seed", "alpha"}
+    unexpected = set(payload) - {"strategy", "rounds", "norm", "seed", "alpha", "clients"}
     if unexpected:
         raise ValidationError(f"unexpected field(s): {sorted(unexpected)}")
     return spec
@@ -118,6 +172,8 @@ def _run_config(spec: dict) -> str:
         f"num-server-rounds={spec['rounds']}",
         f"norm='{spec['norm']}'",
         f"seed={spec['seed']}",
+        # Must equal options.num-supernodes, which start() keeps in step.
+        f"num-partitions={spec['clients']}",
     ]
     if spec["alpha"] is not None:
         parts.append(f"dirichlet-alpha={spec['alpha']}")
@@ -207,6 +263,14 @@ class Launcher:
                         "simulations exhaust memory and corrupt each other's results.",
                         "busy_run": busy}
 
+            # Keep the two client-count settings in step. The SuperLink reads
+            # num-supernodes once at startup, so a change only takes effect after
+            # it restarts -- and the next launch spawns a fresh one.
+            changed, detail = set_supernodes(spec["clients"])
+            if changed:
+                self._kill_trees()
+                time.sleep(2.0)
+
             known = {r["run_id"] for r in live_mod.list_runs(self.live_dir)}
             argv = [
                 str(self.flwr_exe), "run", ".", "local-simulation",
@@ -266,6 +330,23 @@ class Launcher:
                     "confirmed": appeared is not None,
                     "run_config": _run_config(spec), "output": out.strip()[-600:]}
 
+    def _kill_trees(self) -> list[str]:
+        """Tear down the SuperExec and SuperLink trees. Windows only."""
+        if sys.platform != "win32":
+            return []
+        killed = []
+        for name in STOP_TREE_ROOTS:
+            try:
+                r = subprocess.run(
+                    ["taskkill", "/F", "/T", "/IM", name],
+                    capture_output=True, text=True, timeout=30, shell=False,
+                )
+                if r.returncode == 0:
+                    killed.append(name)
+            except (OSError, subprocess.SubprocessError):
+                continue
+        return killed
+
     def stop(self) -> dict:
         """Terminate the processes a simulation runs in.
 
@@ -275,18 +356,7 @@ class Launcher:
         """
         if sys.platform != "win32":
             return {"ok": False, "error": "stop is implemented for Windows only"}
-        killed = []
-        for name in STOP_TREE_ROOTS:
-            try:
-                # /T takes the children with it -- that is where training runs.
-                r = subprocess.run(
-                    ["taskkill", "/F", "/T", "/IM", name],
-                    capture_output=True, text=True, timeout=30, shell=False,
-                )
-                if r.returncode == 0:
-                    killed.append(name)
-            except (OSError, subprocess.SubprocessError):
-                continue
+        killed = self._kill_trees()
 
         # Clear the busy grace so the UI does not keep claiming a run is starting.
         self._launched_at, self._pending_id = 0.0, None

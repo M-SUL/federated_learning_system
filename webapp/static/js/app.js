@@ -21,7 +21,9 @@ window.__launchForm = (patch) => {
   const form = { ...getState().launchForm, ...patch };
   // Selects hand back strings; the server whitelist is typed, so coerce here.
   for (const k of ['alpha']) if (form[k] !== undefined) form[k] = Number(form[k]);
-  for (const k of ['rounds', 'seed']) if (form[k] !== undefined) form[k] = parseInt(form[k], 10);
+  for (const k of ['rounds', 'seed', 'clients']) {
+    if (form[k] !== undefined) form[k] = parseInt(form[k], 10);
+  }
   dispatch({ launchForm: form, launchError: null });
 };
 
