@@ -27,10 +27,24 @@ window.__launchForm = (patch) => {
   dispatch({ launchForm: form, launchError: null });
 };
 
+let launchFingerprint = null;
+
 async function refreshLaunch() {
   try {
     const r = await fetch('/api/launch');
-    dispatch({ launch: await r.json() });
+    const d = await r.json();
+    // Dispatch only on a real change. This runs on a timer, and dispatching
+    // unconditionally would rebuild the current view every few seconds --
+    // visible as a page that never stops flickering, and it would discard an
+    // open dropdown mid-interaction.
+    const fp = JSON.stringify([
+      d.enabled, d.available, d.current_clients,
+      d.busy && d.busy.run_id, d.busy && d.busy.status, d.last_error,
+    ]);
+    if (fp !== launchFingerprint) {
+      launchFingerprint = fp;
+      dispatch({ launch: d });
+    }
   } catch { /* server gone; the status pill already says so */ }
 }
 

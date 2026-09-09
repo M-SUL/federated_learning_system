@@ -19,6 +19,11 @@ const EVENT_TYPES = [
 let es = null;
 let pollTimer = null;
 let pending = false;
+// The run we have already streamed. /api/runs reports the newest run as
+// `current` even once it has finished (so history can be viewed), so without
+// this we would reconnect to a finished run, replay it, hit eof, and poll
+// again -- a refresh loop every few seconds that never settles.
+let streamedRunId = null;
 
 function flush() {
   // Batch repaints: a fast round can deliver 12 events in one tick, and we want
@@ -45,13 +50,29 @@ function onEvent(ev) {
 
 function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
 
+/**
+ * Should the poller open a stream for what /api/runs just reported?
+ *
+ * Only for a run that is actually LIVE and has not already been streamed.
+ * `current` names the newest run even once it has finished, so attaching on
+ * `current` alone replays a finished run, hits eof, restarts the poll, and
+ * repaints forever. Exported so that rule is testable without a browser.
+ */
+export function shouldAttach(runs, current, streamed) {
+  const cur = (runs || []).find((x) => x.run_id === current);
+  return !!(cur && cur.is_live && cur.run_id !== streamed);
+}
+
 function startPolling() {
   if (pollTimer) return;
   pollTimer = setInterval(async () => {
     try {
       const r = await fetch('/api/runs');
       const d = await r.json();
-      if (d.current) { stopPolling(); connect(); }
+      if (shouldAttach(d.runs, d.current, streamedRunId)) {
+        stopPolling();
+        connect();
+      }
     } catch { /* server down; keep polling quietly */ }
   }, 3000);
 }
@@ -69,6 +90,7 @@ export function connect() {
       let info = null;
       try { info = JSON.parse(ev.data); } catch { /* ignore */ }
       const run = info && info.run;
+      if (run) streamedRunId = run.run_id;
       dispatch({
         liveInfo: run,
         multipleLive: (info && info.multiple_live) || [],
