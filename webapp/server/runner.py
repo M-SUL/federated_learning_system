@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -205,7 +206,10 @@ class Launcher:
         ):
             if candidate.exists():
                 return candidate
-        return None
+        # In a container everything shares one environment, so flwr is simply on
+        # PATH rather than in a sibling venv.
+        found = shutil.which("flwr")
+        return Path(found) if found else None
 
     def available(self) -> tuple[bool, str]:
         if self.flwr_exe is None or not Path(self.flwr_exe).exists():
@@ -331,20 +335,40 @@ class Launcher:
                     "run_config": _run_config(spec), "output": out.strip()[-600:]}
 
     def _kill_trees(self) -> list[str]:
-        """Tear down the SuperExec and SuperLink trees. Windows only."""
-        if sys.platform != "win32":
-            return []
+        """Tear down the SuperExec and SuperLink process trees.
+
+        Two implementations because the process model differs. On Windows
+        taskkill /T walks the tree for us. On Linux the same names exist as
+        console scripts, so pkill by name plus its children is the equivalent;
+        `pkill -f` is used because the executable is a python shim whose argv[0]
+        carries the real name.
+        """
         killed = []
         for name in STOP_TREE_ROOTS:
+            base = name[:-4] if name.endswith(".exe") else name
+            if sys.platform == "win32":
+                cmd = ["taskkill", "/F", "/T", "/IM", name]
+            else:
+                # -f matches the full command line, which is what a console
+                # script looks like once python has exec'd it.
+                cmd = ["pkill", "-9", "-f", base]
             try:
-                r = subprocess.run(
-                    ["taskkill", "/F", "/T", "/IM", name],
-                    capture_output=True, text=True, timeout=30, shell=False,
-                )
+                r = subprocess.run(cmd, capture_output=True, text=True,
+                                   timeout=30, shell=False)
                 if r.returncode == 0:
-                    killed.append(name)
+                    killed.append(base)
             except (OSError, subprocess.SubprocessError):
                 continue
+
+        if sys.platform != "win32":
+            # pkill does not reap the Ray workers, which are children rather than
+            # name matches. They exit once their parent is gone, but a stray
+            # `ray` process would keep memory pinned on a small VM.
+            try:
+                subprocess.run(["pkill", "-9", "-f", "ray::"], capture_output=True,
+                               timeout=15, shell=False)
+            except (OSError, subprocess.SubprocessError):
+                pass
         return killed
 
     def stop(self) -> dict:
@@ -354,8 +378,6 @@ class Launcher:
         training lives in the SuperExec-spawned processes. Only one run is ever
         permitted, so stopping by image name cannot catch someone else's work.
         """
-        if sys.platform != "win32":
-            return {"ok": False, "error": "stop is implemented for Windows only"}
         killed = self._kill_trees()
 
         # Clear the busy grace so the UI does not keep claiming a run is starting.

@@ -47,6 +47,23 @@ def main() -> int:
 
     import uvicorn
     from server.api import create_app
+    from server.auth import credentials_from_env
+
+    credentials = credentials_from_env()
+
+    # The one rule worth failing to start over: a publicly reachable instance
+    # that can spawn training runs must be behind a password. Without it the
+    # only protection is nobody knowing the URL, and this launches CPU-heavy
+    # jobs and rewrites the Flower config.
+    if allow_launch and not loopback and not credentials:
+        print(
+            "\nREFUSING TO START: launching is enabled on a public address "
+            f"({args.host}) with no password.\n"
+            "  Set DASHBOARD_PASSWORD (and optionally DASHBOARD_USER), or\n"
+            "  pass --no-launch to serve results read-only.\n",
+            file=sys.stderr,
+        )
+        return 2
 
     print(f"  results : {results_dir}")
     print(f"  live    : {live_dir}")
@@ -57,12 +74,15 @@ def main() -> int:
     if not loopback and not allow_launch and not args.no_launch:
         print("            bound to a non-loopback address, so launching is off; "
               "pass --allow-remote-launch to override")
+    print(f"  auth    : {'enabled (' + credentials[0] + ')' if credentials else 'disabled'}")
     print(f"  console : http://{args.host}:{args.port}")
 
     uvicorn.run(
         create_app(results_dir, live_dir, app_dir=args.app_dir.resolve(),
-                   allow_launch=allow_launch),
+                   allow_launch=allow_launch, credentials=credentials),
         host=args.host, port=args.port, log_level="warning",
+        # Behind Caddy/Cloudflare, so client IPs and scheme come from headers.
+        proxy_headers=True, forwarded_allow_ips="*",
     )
     return 0
 

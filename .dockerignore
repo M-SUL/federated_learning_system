@@ -1,0 +1,12 @@
+# The dataset is downloaded on first boot into a volume, not baked into the
+# image: ~400 MB of licensed UCI data would bloat every layer.
+gene+expression+cancer+rna+seq/
+*.tar.gz
+
+.git/
+.venv*/
+**/__pycache__/
+**/*.pyc
+fl_rnaseq/notebooks/
+fl_rnaseq/results/live/
+claude-chat-history.tar.gz

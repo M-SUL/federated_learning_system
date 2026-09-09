@@ -1,0 +1,41 @@
+services:
+  console:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fl-rnaseq-console
+    restart: unless-stopped
+    ports:
+      # Bound to localhost: put Caddy or a Cloudflare tunnel in front for TLS
+      # rather than exposing plain HTTP, since basic-auth credentials would
+      # otherwise cross the network in the clear. Change to "8000:8000" only if
+      # something else already terminates TLS.
+      - "127.0.0.1:8000:8000"
+    environment:
+      # REQUIRED when ALLOW_LAUNCH=true. The container refuses to start without
+      # it: a public instance that spawns CPU-heavy jobs cannot rely on nobody
+      # knowing the URL.
+      DASHBOARD_USER: "${DASHBOARD_USER:-admin}"
+      DASHBOARD_PASSWORD: "${DASHBOARD_PASSWORD:?set DASHBOARD_PASSWORD in .env}"
+      # false serves stored results read-only, with no way to start training.
+      ALLOW_LAUNCH: "${ALLOW_LAUNCH:-true}"
+    volumes:
+      # ~200 MB, downloaded once on first boot and kept across rebuilds.
+      - dataset:/data
+      # Results outlive the container, so a rebuild does not discard experiments.
+      - ./fl_rnaseq/results:/app/fl_rnaseq/results
+    deploy:
+      resources:
+        limits:
+          # Each of the 5 clients is a Ray worker holding its own shard plus
+          # torch. Below ~3.5 GB the workers are OOM-killed mid-round, which
+          # shows up as a run that silently stops updating rather than an error.
+          memory: 6G
+        reservations:
+          memory: 2G
+    # Ray uses /dev/shm for its object store; Docker's 64 MB default makes it
+    # spill to disk and crawl.
+    shm_size: "2gb"
+
+volumes:
+  dataset:

@@ -15,6 +15,7 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
+from . import auth as auth_mod
 from . import live as live_mod
 from . import runner as runner_mod
 from . import snapshot as snapshot_mod
@@ -27,11 +28,16 @@ def create_app(
     live_dir: Path,
     app_dir: Path | None = None,
     allow_launch: bool = True,
+    credentials: tuple[str, str] | None = None,
 ) -> FastAPI:
     app = FastAPI(title="FL RNA-seq Federation Console", docs_url=None, redoc_url=None)
     results_dir, live_dir = Path(results_dir), Path(live_dir)
     app_dir = Path(app_dir) if app_dir else results_dir.parent
     launcher = runner_mod.Launcher(app_dir, live_dir)
+
+    # Registered first so it wraps every later route and the static mount.
+    if credentials:
+        auth_mod.install(app, *credentials)
 
     @app.get("/api/health")
     def health() -> dict:
